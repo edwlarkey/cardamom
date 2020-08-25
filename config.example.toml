@@ -1,0 +1,8 @@
+[database]
+type = "sqlite3"
+database = "db.sqlite"
+
+[web]
+ip = ""
+port = "4000"
+secret = "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge"

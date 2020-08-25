@@ -1,0 +1,41 @@
+{{define "title"}}Signup{{end}}
+
+{{define "content"}}
+<div class="columns">
+<div class="column is-one-quarter is-offset-one-third">
+<h1 class="title is-1">Signup</h1>
+<form class="auth" action='/signup' method='POST' novalidate>
+    {{ .CSRFField }}
+    {{with .Form}}
+        {{with .Errors.Get "generic"}}
+        <div class="error">{{.}}</div>
+        {{end}}
+        <div class="field">
+            <label class="label">Name</label>
+            {{with .Errors.Get "name"}}
+                <div class="has-text-danger">{{.}}</div>
+            {{end}}
+            <input class="input" type="text" name="name" value="{{.Get "name"}}" autofocus="autofocus">
+        </div>
+        <div class="field">
+            <label class="label">Email</label>
+            {{with .Errors.Get "email"}}
+                <label class="has-text-danger">{{.}}</label>
+            {{end}}
+            <input class="input" type="email" name="email" value="{{.Get "email"}}">
+        </div>
+        <div class="field">
+            <label class="label">Password</label>
+            {{with .Errors.Get "password"}}
+                <label class="has-text-danger">{{.}}</label>
+            {{end}}
+            <input class="input" type="password" name="password">
+        </div>
+        <div>
+            <input class="button is-success" type="submit" value="Login">
+        </div>
+    {{end}}
+</form>
+</div>
+</div>
+{{end}}

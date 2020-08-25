@@ -1,0 +1,31 @@
+{{define "title"}}Add a new bookmark{{end}}
+
+{{define "content"}}
+<div class="columns">
+<div class="column is-one-third">
+<h1 class="title is-1">Add Bookmark</h1>
+  <form id="bookmark-create" action='/app/bookmark/create' method='POST'>
+      {{ .CSRFField }}
+      {{with .Form}}
+        <div class="field">
+          <label class="label">Title</label>
+          {{with .Errors.Get "title"}}
+              <div class="has-text-danger">{{.}}</div>
+          {{end}}
+          <input class="input" type="text" name="title" value="{{.Get "title"}}" autofocus="autofocus">
+        </div>
+        <div class="field">
+          <label class="label">URL</label>
+          {{with .Errors.Get "url"}}
+              <div class="has-text-danger">{{.}}</div>
+          {{end}}
+          <input class="input" type="text" name="url" value="{{.Get "url"}}" autofocus="autofocus">
+        </div>
+        <div class="field">
+          <input class="button is-success" type="submit" value="Create">
+        </div>
+      {{end}}
+</form>
+</div>
+</div>
+{{end}}

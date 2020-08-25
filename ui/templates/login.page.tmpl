@@ -1,0 +1,31 @@
+{{define "title"}}Login{{end}}
+
+{{define "content"}}
+<div class="columns">
+<div class="column is-one-third is-offset-one-third">
+<h1 class="title is-1">Login</h1>
+<form class="auth" action="/login" method="POST" novalidate>
+    {{ .CSRFField }}
+    {{with .Form}}
+        {{with .Errors.Get "generic"}}
+          <div class="notification is-danger">
+            <button class="delete"></button>
+            {{.}}
+          </div>
+        {{end}}
+        <div class="field">
+          <label class="label">Email</label>
+          <input class="input" type="email" name="email" value="{{.Get "email"}}" autofocus="autofocus">
+        </div>
+        <div class="field">
+          <label class="label">Password</label>
+          <input class="input" type="password" name="password">
+        </div>
+        <div class="field">
+          <input class="button is-success" type="submit" value="Login">
+        </div>
+    {{end}}
+</form>
+</div>
+</div>
+{{end}}

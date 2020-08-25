@@ -1,0 +1,26 @@
+{{define "title"}}{{.SiteTitle}}: {{.Bookmark.Title}}{{end}}
+
+{{define "content"}}
+<section id="content">
+    {{with .Bookmark}}
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+          <a href="{{.URL}}" target="_blank" alt="{{.Title}}">{{.Title}}</a>
+        </p>
+      </header>
+      <div class="card-content">
+        <div class="content">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
+          <br>
+          <time datetime="{{.CreatedAt}}">{{.CreatedAt | humanDate}}</time>
+        </div>
+      </div>
+      <footer class="card-footer">
+        <a href="/app/bookmark/{{.ID}}/edit" class="card-footer-item">Edit</a>
+        <a href="#" class="card-footer-item">Delete</a>
+      </footer>
+    </div>
+    {{end}}
+</section>
+{{end}}

@@ -1,0 +1,25 @@
+{{define "title"}}Add a new tag{{end}}
+
+{{define "content"}}
+<div class="columns">
+<div class="column is-one-third">
+<h1 class="title is-1">Add Tag</h1>
+<form id="tag-create" action='/app/tag/create' method='POST'>
+    {{ .CSRFField }}
+    {{with .Form}}
+        {{with .Errors.Get "generic"}}
+            <div class="notification is-danger">
+              <button class="delete"></button>
+              {{.}}
+            </div>
+        {{end}}
+        <div class="field">
+            <label class="label">Name</label>
+            <input class="input" type="text" name="name" value="{{.Get "name"}}" autofocus="autofocus">
+        </div>
+    {{end}}
+    <input class="button is-success" type="submit" value="Create">
+</form>
+</div>
+</div>
+{{end}}
