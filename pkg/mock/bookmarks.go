@@ -18,7 +18,7 @@ func (m *DB) InsertBookmark(*models.Bookmark) error {
 	return nil
 }
 
-func (m *DB) UpdateBookmark(id int, url string, tags []string) (*models.Bookmark, error) {
+func (m *DB) UpdateBookmark(id int64, url string, tags []string) (*models.Bookmark, error) {
 	return mockBookmark, nil
 }
 

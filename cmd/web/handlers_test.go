@@ -37,13 +37,13 @@ func TestShowBookmarkAnon(t *testing.T) {
 		wantCode int
 		wantBody []byte
 	}{
-		{"Valid ID", "/bookmark/1", http.StatusTemporaryRedirect, nil},
-		{"Non-existent ID", "/bookmark/2", http.StatusTemporaryRedirect, nil},
-		{"Negative ID", "/bookmark/-1", http.StatusTemporaryRedirect, nil},
-		{"Decimal ID", "/bookmark/1.23", http.StatusTemporaryRedirect, nil},
-		{"String ID", "/bookmark/foo", http.StatusTemporaryRedirect, nil},
-		{"Empty ID", "/bookmark/", http.StatusNotFound, nil},
-		{"Trailing slash", "/bookmark/1/", http.StatusNotFound, nil},
+		{"Valid ID", "/app/bookmark/1", http.StatusTemporaryRedirect, nil},
+		{"Non-existent ID", "/app/bookmark/2", http.StatusTemporaryRedirect, nil},
+		{"Negative ID", "/app/bookmark/-1", http.StatusTemporaryRedirect, nil},
+		{"Decimal ID", "/app/bookmark/1.23", http.StatusTemporaryRedirect, nil},
+		{"String ID", "/app/bookmark/foo", http.StatusTemporaryRedirect, nil},
+		{"Empty ID", "/app/bookmark/", http.StatusNotFound, nil},
+		{"Trailing slash", "/app/bookmark/1/", http.StatusNotFound, nil},
 	}
 
 	for _, tt := range tests {
@@ -68,7 +68,7 @@ func TestShowBookmark(t *testing.T) {
 	ts := newTestServer(t, app.routes())
 	defer ts.Close()
 
-	_, _, loginbody := ts.get(t, "/user/login")
+	_, _, loginbody := ts.get(t, "/login")
 	csrfToken := extractCSRFToken(t, loginbody)
 
 	form := url.Values{}
@@ -76,7 +76,11 @@ func TestShowBookmark(t *testing.T) {
 	form.Add("password", "whatever")
 	form.Add("csrf_token", csrfToken)
 
-	_, _, _ = ts.postForm(t, "/user/login", form)
+	code, _, body := ts.postForm(t, "/login", form)
+
+	if code != 200 {
+		t.Errorf("want %d; got %d. With body: %v", 200, code, string(body[:]))
+	}
 
 	tests := []struct {
 		name     string
@@ -84,13 +88,13 @@ func TestShowBookmark(t *testing.T) {
 		wantCode int
 		wantBody []byte
 	}{
-		{"Valid ID", "/bookmark/1", http.StatusOK, []byte("Bookmark Title Here")},
-		{"Non-existent ID", "/bookmark/2", http.StatusNotFound, nil},
-		{"Negative ID", "/bookmark/-1", http.StatusNotFound, nil},
-		{"Decimal ID", "/bookmark/1.23", http.StatusNotFound, nil},
-		{"String ID", "/bookmark/foo", http.StatusNotFound, nil},
-		{"Empty ID", "/bookmark/", http.StatusNotFound, nil},
-		{"Trailing slash", "/bookmark/1/", http.StatusNotFound, nil},
+		{"Valid ID", "/app/bookmark/1", http.StatusOK, []byte("Bookmark Title Here")},
+		{"Non-existent ID", "/app/bookmark/2", http.StatusNotFound, nil},
+		{"Negative ID", "/app/bookmark/-1", http.StatusNotFound, nil},
+		{"Decimal ID", "/app/bookmark/1.23", http.StatusNotFound, nil},
+		{"String ID", "/app/bookmark/foo", http.StatusNotFound, nil},
+		{"Empty ID", "/app/bookmark/", http.StatusNotFound, nil},
+		{"Trailing slash", "/app/bookmark/1/", http.StatusNotFound, nil},
 	}
 
 	for _, tt := range tests {
@@ -114,7 +118,7 @@ func TestSignupUser(t *testing.T) {
 	ts := newTestServer(t, app.routes())
 	defer ts.Close()
 
-	_, _, body := ts.get(t, "/user/signup")
+	_, _, body := ts.get(t, "/signup")
 	csrfToken := extractCSRFToken(t, body)
 
 	tests := []struct {
@@ -146,7 +150,7 @@ func TestSignupUser(t *testing.T) {
 			form.Add("password", tt.userPassword)
 			form.Add("csrf_token", tt.csrfToken)
 
-			code, _, body := ts.postForm(t, "/user/signup", form)
+			code, _, body := ts.postForm(t, "/signup", form)
 
 			if code != tt.wantCode {
 				t.Errorf("want %d; got %d", tt.wantCode, code)

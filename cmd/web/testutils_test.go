@@ -16,7 +16,7 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-var csrfTokenRX = regexp.MustCompile(`<input type='hidden' name='csrf_token' value='(.+)'>`)
+var csrfTokenRX = regexp.MustCompile(`<input type="hidden" name="gorilla.csrf.Token" value="(.+)">`)
 
 func extractCSRFToken(t *testing.T, body []byte) string {
 	// FindSubmatch returns an array with entire match in first element

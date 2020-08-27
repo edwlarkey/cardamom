@@ -38,7 +38,7 @@ func (app *application) recoverPanic(next http.Handler) http.Handler {
 func (app *application) requireAuthenticatedUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if app.authenticatedUser(r) == nil {
-			http.Redirect(w, r, "/user/login", http.StatusTemporaryRedirect)
+			http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 			return
 		}
 
