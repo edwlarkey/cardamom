@@ -37,13 +37,13 @@ func TestShowBookmarkAnon(t *testing.T) {
 		wantCode int
 		wantBody []byte
 	}{
-		{"Valid ID", "/bookmark/1", http.StatusTemporaryRedirect, nil},
-		{"Non-existent ID", "/bookmark/2", http.StatusTemporaryRedirect, nil},
-		{"Negative ID", "/bookmark/-1", http.StatusTemporaryRedirect, nil},
-		{"Decimal ID", "/bookmark/1.23", http.StatusTemporaryRedirect, nil},
-		{"String ID", "/bookmark/foo", http.StatusTemporaryRedirect, nil},
-		{"Empty ID", "/bookmark/", http.StatusNotFound, nil},
-		{"Trailing slash", "/bookmark/1/", http.StatusNotFound, nil},
+		{"Valid ID", "/app/bookmark/1", http.StatusTemporaryRedirect, nil},
+		{"Non-existent ID", "/app/bookmark/2", http.StatusTemporaryRedirect, nil},
+		{"Negative ID", "/app/bookmark/-1", http.StatusTemporaryRedirect, nil},
+		{"Decimal ID", "/app/bookmark/1.23", http.StatusTemporaryRedirect, nil},
+		{"String ID", "/app/bookmark/foo", http.StatusTemporaryRedirect, nil},
+		{"Empty ID", "/app/bookmark/", http.StatusNotFound, nil},
+		{"Trailing slash", "/app/bookmark/1/", http.StatusNotFound, nil},
 	}
 
 	for _, tt := range tests {
@@ -68,15 +68,15 @@ func TestShowBookmark(t *testing.T) {
 	ts := newTestServer(t, app.routes())
 	defer ts.Close()
 
-	_, _, loginbody := ts.get(t, "/user/login")
+	_, _, loginbody := ts.get(t, "/login")
 	csrfToken := extractCSRFToken(t, loginbody)
 
 	form := url.Values{}
 	form.Add("email", "alice@example.com")
 	form.Add("password", "whatever")
-	form.Add("csrf_token", csrfToken)
+	form.Add("gorilla.csrf.Token", csrfToken)
 
-	_, _, _ = ts.postForm(t, "/user/login", form)
+	_, _, _ = ts.postForm(t, "/login", form)
 
 	tests := []struct {
 		name     string
@@ -84,13 +84,13 @@ func TestShowBookmark(t *testing.T) {
 		wantCode int
 		wantBody []byte
 	}{
-		{"Valid ID", "/bookmark/1", http.StatusOK, []byte("Bookmark Title Here")},
-		{"Non-existent ID", "/bookmark/2", http.StatusNotFound, nil},
-		{"Negative ID", "/bookmark/-1", http.StatusNotFound, nil},
-		{"Decimal ID", "/bookmark/1.23", http.StatusNotFound, nil},
-		{"String ID", "/bookmark/foo", http.StatusNotFound, nil},
-		{"Empty ID", "/bookmark/", http.StatusNotFound, nil},
-		{"Trailing slash", "/bookmark/1/", http.StatusNotFound, nil},
+		{"Valid ID", "/app/bookmark/1", http.StatusOK, []byte("Bookmark Title Here")},
+		{"Non-existent ID", "/app/bookmark/2", http.StatusNotFound, nil},
+		{"Negative ID", "/app/bookmark/-1", http.StatusNotFound, nil},
+		{"Decimal ID", "/app/bookmark/1.23", http.StatusNotFound, nil},
+		{"String ID", "/app/bookmark/foo", http.StatusNotFound, nil},
+		{"Empty ID", "/app/bookmark/", http.StatusNotFound, nil},
+		{"Trailing slash", "/app/bookmark/1/", http.StatusNotFound, nil},
 	}
 
 	for _, tt := range tests {
@@ -114,7 +114,7 @@ func TestSignupUser(t *testing.T) {
 	ts := newTestServer(t, app.routes())
 	defer ts.Close()
 
-	_, _, body := ts.get(t, "/user/signup")
+	_, _, body := ts.get(t, "/signup")
 	csrfToken := extractCSRFToken(t, body)
 
 	tests := []struct {
@@ -135,7 +135,7 @@ func TestSignupUser(t *testing.T) {
 		{"Invalid email (missing local part)", "Bob", "@example.com", "validPa$$word", csrfToken, http.StatusOK, []byte("This field is invalid")},
 		{"Short password", "Bob", "bob@example.com", "pa$$", csrfToken, http.StatusOK, []byte("This field is too short (minimum is 8 characters)")},
 		{"Duplicate email", "Bob", "dupe@example.com", "validPa$$word", csrfToken, http.StatusOK, []byte("Address is already in use")},
-		{"Invalid CSRF Token", "", "", "", "wrongToken", http.StatusBadRequest, nil},
+		{"Invalid CSRF Token", "", "", "", "wrongToken", http.StatusForbidden, nil},
 	}
 
 	for _, tt := range tests {
@@ -144,9 +144,9 @@ func TestSignupUser(t *testing.T) {
 			form.Add("name", tt.userName)
 			form.Add("email", tt.userEmail)
 			form.Add("password", tt.userPassword)
-			form.Add("csrf_token", tt.csrfToken)
+			form.Add("gorilla.csrf.Token", tt.csrfToken)
 
-			code, _, body := ts.postForm(t, "/user/signup", form)
+			code, _, body := ts.postForm(t, "/signup", form)
 
 			if code != tt.wantCode {
 				t.Errorf("want %d; got %d", tt.wantCode, code)

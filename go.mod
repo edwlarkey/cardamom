@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/BurntSushi/toml v0.3.1
+	github.com/UnnoTed/fileb0x v1.1.4 // indirect
 	github.com/antchfx/goreadly v0.0.0-20190301083720-acd01641e2dd
 	github.com/antchfx/htmlquery v1.2.1 // indirect
 	github.com/antchfx/xpath v1.1.3 // indirect
