@@ -33,10 +33,10 @@ func (app *application) getOptions(bookmark *models.Bookmark) ([]Option, error) 
 		return nil, err
 	}
 
-	options := []Option{}
+	var options []Option
 
 	for _, item := range t {
-		option := Option{}
+		var option Option
 
 		for i, bt := range bookmark.Tags {
 			if item.ID == bt.ID {
@@ -110,7 +110,7 @@ func (app *application) authenticatedUser(r *http.Request) *models.User {
 	}
 
 	val := session.Values["user"]
-	var user = &models.User{}
+	var user *models.User
 	user, ok := val.(*models.User)
 	if !ok {
 		return nil
