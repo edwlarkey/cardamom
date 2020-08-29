@@ -74,13 +74,9 @@ func TestShowBookmark(t *testing.T) {
 	form := url.Values{}
 	form.Add("email", "alice@example.com")
 	form.Add("password", "whatever")
-	form.Add("csrf_token", csrfToken)
+	form.Add("gorilla.csrf.Token", csrfToken)
 
-	code, _, body := ts.postForm(t, "/login", form)
-
-	if code != 200 {
-		t.Errorf("want %d; got %d. With body: %v", 200, code, string(body[:]))
-	}
+	_, _, _ = ts.postForm(t, "/login", form)
 
 	tests := []struct {
 		name     string
@@ -139,7 +135,7 @@ func TestSignupUser(t *testing.T) {
 		{"Invalid email (missing local part)", "Bob", "@example.com", "validPa$$word", csrfToken, http.StatusOK, []byte("This field is invalid")},
 		{"Short password", "Bob", "bob@example.com", "pa$$", csrfToken, http.StatusOK, []byte("This field is too short (minimum is 8 characters)")},
 		{"Duplicate email", "Bob", "dupe@example.com", "validPa$$word", csrfToken, http.StatusOK, []byte("Address is already in use")},
-		{"Invalid CSRF Token", "", "", "", "wrongToken", http.StatusBadRequest, nil},
+		{"Invalid CSRF Token", "", "", "", "wrongToken", http.StatusForbidden, nil},
 	}
 
 	for _, tt := range tests {
@@ -148,7 +144,7 @@ func TestSignupUser(t *testing.T) {
 			form.Add("name", tt.userName)
 			form.Add("email", tt.userEmail)
 			form.Add("password", tt.userPassword)
-			form.Add("csrf_token", tt.csrfToken)
+			form.Add("gorilla.csrf.Token", tt.csrfToken)
 
 			code, _, body := ts.postForm(t, "/signup", form)
 
