@@ -51,7 +51,7 @@ func main() {
 	var dsn string
 	switch conf.Database.Type {
 	case "sqlite3":
-		dsn = fmt.Sprintf("%s", conf.Database.Database)
+		dsn = conf.Database.Database
 	default:
 		dsn = fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", conf.Database.Server, conf.Database.Port, conf.Database.User, conf.Database.Database, conf.Database.Password)
 	}
@@ -83,7 +83,7 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
-	app.db.Migrate()
+	err = app.db.Migrate()
 	if err != nil {
 		errorLog.Fatal(err)
 	}
@@ -122,7 +122,10 @@ func main() {
 	defer cancel()
 	// Doesn't block if no connections, but will otherwise wait
 	// until the timeout deadline.
-	srv.Shutdown(ctx)
+	err = srv.Shutdown(ctx)
+	if err != nil {
+		errorLog.Println(err)
+	}
 	// Optionally, you could run srv.Shutdown in a goroutine and block on
 	// <-ctx.Done() if your application should wait for other services
 	// to finalize based on context cancellation.

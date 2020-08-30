@@ -11,5 +11,4 @@ func (d *DB) Migrate() error {
 }
 
 func (d *DB) Close() {
-	return
 }

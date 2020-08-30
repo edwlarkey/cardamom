@@ -39,7 +39,7 @@ func (app *application) routes() http.Handler {
 
 	// Static assets
 	r.PathPrefix("/static/").Handler(assets.Handler)
-	r.HandleFunc("/ping", ping)
+	r.HandleFunc("/ping", app.ping)
 
 	// Home
 	r.HandleFunc("/", app.home)
