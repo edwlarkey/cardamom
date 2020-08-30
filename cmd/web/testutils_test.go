@@ -11,7 +11,7 @@ import (
 	"regexp"
 	"testing"
 
-	"gitlab.com/edwlarkey/cardamom/pkg/mock"
+	"github.com/edwlarkey/cardamom/pkg/mock"
 
 	"github.com/gorilla/sessions"
 )

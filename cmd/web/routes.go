@@ -5,7 +5,7 @@ import (
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
-	"gitlab.com/edwlarkey/cardamom/pkg/assets"
+	"github.com/edwlarkey/cardamom/pkg/assets"
 )
 
 func (app *application) routes() http.Handler {

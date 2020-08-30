@@ -8,8 +8,8 @@ import (
 	"github.com/antchfx/goreadly"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
-	"gitlab.com/edwlarkey/cardamom/pkg/forms"
-	"gitlab.com/edwlarkey/cardamom/pkg/models"
+	"github.com/edwlarkey/cardamom/pkg/forms"
+	"github.com/edwlarkey/cardamom/pkg/models"
 )
 
 type Option struct {

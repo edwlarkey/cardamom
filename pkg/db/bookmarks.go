@@ -1,7 +1,7 @@
 package db
 
 import (
-	"gitlab.com/edwlarkey/cardamom/pkg/models"
+	"github.com/edwlarkey/cardamom/pkg/models"
 )
 
 // InsertBookmark adds a bookmark to the DB

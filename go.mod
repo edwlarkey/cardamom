@@ -1,4 +1,4 @@
-module gitlab.com/edwlarkey/cardamom
+module github.com/edwlarkey/cardamom
 
 go 1.12
 
