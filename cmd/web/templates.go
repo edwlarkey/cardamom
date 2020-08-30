@@ -37,14 +37,9 @@ func monthDate(t time.Time) string {
 	return t.UTC().Format("Jan 2006")
 }
 
-func unescape(s string) template.HTML {
-	return template.HTML(s)
-}
-
 var functions = template.FuncMap{
 	"humanDate": humanDate,
 	"monthDate": monthDate,
-	"unescape":  unescape,
 }
 
 type templates struct {

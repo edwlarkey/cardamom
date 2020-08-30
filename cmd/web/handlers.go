@@ -17,10 +17,6 @@ type Option struct {
 	Selected bool
 }
 
-func ping(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
-}
-
 // RouteInt64Param returns an URL route parameter as int64.
 func RouteInt64Param(param string) int64 {
 	value, err := strconv.ParseInt(param, 10, 64)
@@ -33,6 +29,14 @@ func RouteInt64Param(param string) int64 {
 	}
 
 	return value
+}
+
+func (app *application) ping(w http.ResponseWriter, r *http.Request) {
+	_, err := w.Write([]byte("OK"))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 }
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -132,13 +136,7 @@ func (app *application) updateBookmark(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bookmark, err := app.db.GetBookmark(id)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	bookmark, err = app.db.UpdateBookmark(id, form.Get("title"), r.Form["tags"])
+	bookmark, err := app.db.UpdateBookmark(id, form.Get("title"), r.Form["tags"])
 	if err != nil {
 		app.serverError(w, err)
 		return
