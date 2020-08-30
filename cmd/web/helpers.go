@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/gorilla/csrf"
-	"gitlab.com/edwlarkey/cardamom/pkg/models"
+	"github.com/edwlarkey/cardamom/pkg/models"
 )
 
 func (app *application) serverError(w http.ResponseWriter, err error) {

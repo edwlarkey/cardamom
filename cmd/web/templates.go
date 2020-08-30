@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/edwlarkey/cardamom/pkg/assets"
-	"gitlab.com/edwlarkey/cardamom/pkg/forms"
-	"gitlab.com/edwlarkey/cardamom/pkg/models"
+	"github.com/edwlarkey/cardamom/pkg/assets"
+	"github.com/edwlarkey/cardamom/pkg/forms"
+	"github.com/edwlarkey/cardamom/pkg/models"
 )
 
 type templateData struct {

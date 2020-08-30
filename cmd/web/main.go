@@ -12,9 +12,9 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/gorilla/sessions"
-	"gitlab.com/edwlarkey/cardamom/pkg/config"
-	"gitlab.com/edwlarkey/cardamom/pkg/db"
-	"gitlab.com/edwlarkey/cardamom/pkg/models"
+	"github.com/edwlarkey/cardamom/pkg/config"
+	"github.com/edwlarkey/cardamom/pkg/db"
+	"github.com/edwlarkey/cardamom/pkg/models"
 )
 
 type application struct {

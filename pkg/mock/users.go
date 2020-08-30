@@ -3,7 +3,7 @@ package mock
 import (
 	"time"
 
-	"gitlab.com/edwlarkey/cardamom/pkg/models"
+	"github.com/edwlarkey/cardamom/pkg/models"
 )
 
 var mockUser = &models.User{
