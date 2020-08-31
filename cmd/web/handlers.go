@@ -6,10 +6,10 @@ import (
 	"strconv"
 
 	"github.com/antchfx/goreadly"
-	"github.com/gorilla/mux"
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/edwlarkey/cardamom/pkg/forms"
 	"github.com/edwlarkey/cardamom/pkg/models"
+	"github.com/gorilla/mux"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 type Option struct {
@@ -60,7 +60,7 @@ func (app *application) showBookmark(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v, err := app.db.GetBookmark(id)
+	v, err := app.db.BookmarkByID(id)
 	if err == models.ErrNoRecord {
 		app.notFound(w)
 		return
@@ -83,7 +83,7 @@ func (app *application) editBookmarkForm(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	bookmark, err := app.db.GetBookmark(id)
+	bookmark, err := app.db.BookmarkByID(id)
 	if err == models.ErrNoRecord {
 		app.notFound(w)
 		return
@@ -136,7 +136,16 @@ func (app *application) updateBookmark(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bookmark, err := app.db.UpdateBookmark(id, form.Get("title"), r.Form["tags"])
+	bookmark, err := app.db.BookmarkByID(id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	bookmark.Title = form.Get("title")
+	bookmark.URL = form.Get("url")
+
+	err = app.db.UpdateBookmark(bookmark)
 	if err != nil {
 		app.serverError(w, err)
 		return

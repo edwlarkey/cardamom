@@ -11,10 +11,10 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	"github.com/gorilla/sessions"
 	"github.com/edwlarkey/cardamom/pkg/config"
-	"github.com/edwlarkey/cardamom/pkg/db"
+	"github.com/edwlarkey/cardamom/pkg/db/postgresql"
 	"github.com/edwlarkey/cardamom/pkg/models"
+	"github.com/gorilla/sessions"
 )
 
 type application struct {
@@ -27,13 +27,13 @@ type application struct {
 		Migrate() error
 		Close()
 		LatestBookmarks() ([]*models.Bookmark, error)
-		GetBookmark(int64) (*models.Bookmark, error)
+		BookmarkByID(int64) (*models.Bookmark, error)
 		InsertBookmark(*models.Bookmark) error
-		UpdateBookmark(int64, string, []string) (*models.Bookmark, error)
+		UpdateBookmark(*models.Bookmark) error
 		GetTags() ([]*models.Tag, error)
 		InsertTag(string) (int, error)
 		InsertUser(string, string, string) error
-		AuthenticateUser(string, string) (*models.User, error)
+		AuthenticateUser(string, string) (int, error)
 		GetUser(int) (*models.User, error)
 	}
 	templates *templates
@@ -74,7 +74,7 @@ func main() {
 		store:     store,
 		config:    conf,
 		templates: initTemplates("base"),
-		db:        &db.DB{},
+		db:        &postgresql.DB{},
 	}
 
 	// Connect to the DB

@@ -13,32 +13,34 @@ var (
 )
 
 type Bookmark struct {
-	ID        int64 `gorm:"primary_key"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time `sql:"index"`
+	ID        int64
 	Title     string
-	URL       string `gorm:"unique"`
-	Read      int    `gorm:"DEFAULT 0"`
-	Tags      []*Tag `gorm:"association_autoupdate:false;many2many:bookmark_tags;association_joinable_foreignkey:tag_id"`
+	URL       string
+	Read      int
+	UserID    int64     `db:"user_id"`
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
+	DeletedAt time.Time `db:"deleted_at"`
+	Tags      []*Tag
 }
 
 type Tag struct {
-	ID        int64 `gorm:"primary_key"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time `sql:"index"`
-	Name      string     `gorm:"unique_index"`
+	ID        int64
+	Name      string
+	UserID    int64     `db:"user_id"`
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
+	DeletedAt time.Time `db:"deleted_at"`
 }
 
 type User struct {
-	ID             int `gorm:"primary_key"`
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	DeletedAt      *time.Time `sql:"index"`
+	ID             int64
 	Name           string
-	Email          string `gorm:"unique_index"`
-	HashedPassword []byte
+	Email          string
+	HashedPassword []byte    `db:"hashed_password"`
+	CreatedAt      time.Time `db:"created_at"`
+	UpdatedAt      time.Time `db:"updated_at"`
+	DeletedAt      time.Time `db:"deleted_at"`
 }
 
 func init() {
