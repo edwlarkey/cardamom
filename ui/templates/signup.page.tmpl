@@ -11,13 +11,6 @@
         <div class="error">{{.}}</div>
         {{end}}
         <div class="field">
-            <label class="label">Name</label>
-            {{with .Errors.Get "name"}}
-                <div class="has-text-danger">{{.}}</div>
-            {{end}}
-            <input class="input" type="text" name="name" value="{{.Get "name"}}" autofocus="autofocus">
-        </div>
-        <div class="field">
             <label class="label">Email</label>
             {{with .Errors.Get "email"}}
                 <label class="has-text-danger">{{.}}</label>
@@ -32,7 +25,7 @@
             <input class="input" type="password" name="password">
         </div>
         <div>
-            <input class="button is-success" type="submit" value="Login">
+            <input class="button is-success" type="submit" value="Signup">
         </div>
     {{end}}
 </form>

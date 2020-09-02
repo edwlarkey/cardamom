@@ -8,12 +8,11 @@ import (
 
 var mockUser = &models.User{
 	ID:        1,
-	Name:      "Alice",
 	Email:     "alice@example.com",
 	CreatedAt: time.Now(),
 }
 
-func (m *DB) InsertUser(name, email, password string) error {
+func (m *DB) InsertUser(email, password string) error {
 	switch email {
 	case "dupe@example.com":
 		return models.ErrDuplicateEmail
@@ -31,7 +30,7 @@ func (m *DB) AuthenticateUser(email, password string) (*models.User, error) {
 	}
 }
 
-func (m *DB) GetUser(id int) (*models.User, error) {
+func (m *DB) GetUser(id int64) (*models.User, error) {
 	switch id {
 	case 1:
 		return mockUser, nil

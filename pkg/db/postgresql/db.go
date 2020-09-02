@@ -26,12 +26,15 @@ func (d *DB) Migrate() error {
 		);
 
 		create table if not exists users (
-			id serial not null,
-			username text not null unique,
+			id bigserial not null,
+			email text not null unique,
 			password text,
 			is_admin bool default 'f',
 			timezone text default 'UTC',
 			last_login_at timestamp with time zone,
+			created_at timestamp with time zone default now(),
+			updated_at timestamp with time zone default now(),
+			deleted_at timestamp with time zone default now(),
 			primary key (id)
 		);
 

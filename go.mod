@@ -9,6 +9,9 @@ require (
 	github.com/antchfx/goreadly v0.0.0-20190301083720-acd01641e2dd
 	github.com/antchfx/htmlquery v1.2.3 // indirect
 	github.com/antchfx/xpath v1.1.10 // indirect
+	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
+	github.com/cenkalti/backoff/v3 v3.2.2 // indirect
+	github.com/containerd/continuity v0.0.0-20200710164510-efbc4488d8fe // indirect
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
 	github.com/google/go-cmp v0.5.0 // indirect
@@ -20,7 +23,12 @@ require (
 	github.com/lib/pq v1.8.0
 	github.com/mattn/go-sqlite3 v1.14.2 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.4
+	github.com/opencontainers/go-digest v1.0.0 // indirect
+	github.com/ory/dockertest v3.3.5+incompatible
+	github.com/ory/dockertest/v3 v3.6.0 // indirect
+	github.com/sirupsen/logrus v1.6.0 // indirect
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	golang.org/x/net v0.0.0-20200822124328-c89045814202
+	golang.org/x/sys v0.0.0-20200831180312-196b9ba8737a // indirect
 	golang.org/x/text v0.3.3 // indirect
 )

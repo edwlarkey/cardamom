@@ -294,7 +294,7 @@ func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form := forms.New(r.PostForm)
-	form.Required("name", "email", "password")
+	form.Required("email", "password")
 	form.MatchesPattern("email", forms.EmailRX)
 	form.MinLength("password", 8)
 
@@ -303,7 +303,7 @@ func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = app.db.InsertUser(form.Get("name"), form.Get("email"), form.Get("password"))
+	err = app.db.InsertUser(form.Get("email"), form.Get("password"))
 	if err == models.ErrDuplicateEmail {
 		form.Errors.Add("email", "Address is already in use")
 		app.render(w, r, "signup.page.tmpl", &templateData{Form: form})

@@ -12,30 +12,17 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/edwlarkey/cardamom/pkg/config"
+	"github.com/edwlarkey/cardamom/pkg/db"
 	"github.com/edwlarkey/cardamom/pkg/db/postgresql"
-	"github.com/edwlarkey/cardamom/pkg/models"
 	"github.com/gorilla/sessions"
 )
 
 type application struct {
-	errorLog *log.Logger
-	infoLog  *log.Logger
-	store    *sessions.CookieStore
-	config   config.Config
-	db       interface {
-		Connect(string, string) error
-		Migrate() error
-		Close()
-		LatestBookmarks() ([]*models.Bookmark, error)
-		BookmarkByID(int64) (*models.Bookmark, error)
-		InsertBookmark(*models.Bookmark) error
-		UpdateBookmark(*models.Bookmark) error
-		GetTags() ([]*models.Tag, error)
-		InsertTag(string) (int, error)
-		InsertUser(string, string, string) error
-		AuthenticateUser(string, string) (int, error)
-		GetUser(int) (*models.User, error)
-	}
+	errorLog  *log.Logger
+	infoLog   *log.Logger
+	store     *sessions.CookieStore
+	config    config.Config
+	db        db.DB
 	templates *templates
 }
 
