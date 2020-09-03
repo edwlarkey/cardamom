@@ -13,7 +13,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/edwlarkey/cardamom/pkg/config"
 	"github.com/edwlarkey/cardamom/pkg/db"
-	"github.com/edwlarkey/cardamom/pkg/db/postgresql"
+	"github.com/edwlarkey/cardamom/pkg/db/postgres"
 	"github.com/gorilla/sessions"
 )
 
@@ -61,7 +61,7 @@ func main() {
 		store:     store,
 		config:    conf,
 		templates: initTemplates("base"),
-		db:        &postgresql.DB{},
+		db:        &postgres.DB{},
 	}
 
 	// Connect to the DB

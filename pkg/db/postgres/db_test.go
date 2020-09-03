@@ -1,4 +1,4 @@
-package postgresql
+package postgres_test
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/edwlarkey/cardamom/pkg/db/postgresql"
+	"github.com/edwlarkey/cardamom/pkg/db/postgres"
 	"github.com/ory/dockertest"
 	"github.com/ory/dockertest/docker"
 )
@@ -14,13 +14,15 @@ import (
 var (
 	user     = "cardamom"
 	password = "secret"
-	db       = "cardamom"
+	database = "cardamom"
 	port     = "5433"
 	dialect  = "postgres"
 	dsn      = "postgres://%s:%s@localhost:%s/%s?sslmode=disable"
 	idleConn = 25
 	maxConn  = 25
 )
+
+var db = &postgres.DB{}
 
 func TestMain(m *testing.M) {
 	pool, err := dockertest.NewPool("")
@@ -34,7 +36,7 @@ func TestMain(m *testing.M) {
 		Env: []string{
 			"POSTGRES_USER=" + user,
 			"POSTGRES_PASSWORD=" + password,
-			"POSTGRES_DB=" + db,
+			"POSTGRES_DB=" + database,
 		},
 		ExposedPorts: []string{"5432"},
 		PortBindings: map[docker.Port][]docker.PortBinding{
@@ -49,27 +51,17 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Could not start resource: %s", err.Error())
 	}
 
-	dsn = fmt.Sprintf(dsn, user, password, port, db)
+	dsn = fmt.Sprintf(dsn, user, password, port, database)
 	if err = pool.Retry(func() error {
-		err = postgresql.Connect(dialect, dsn)
+		err = db.Connect(dialect, dsn)
 		return err
 	}); err != nil {
 		log.Fatalf("Could not connect to docker: %s", err.Error())
 	}
 
 	defer func() {
-		postgresql.Close()
+		db.Close()
 	}()
-
-	err = repo.Drop()
-	if err != nil {
-		panic(err)
-	}
-
-	err = repo.Up()
-	if err != nil {
-		panic(err)
-	}
 
 	code := m.Run()
 
@@ -78,4 +70,18 @@ func TestMain(m *testing.M) {
 	}
 
 	os.Exit(code)
+}
+
+func TestMigrate(t *testing.T) {
+	err := db.Migrate()
+	if err != nil {
+		t.Errorf("Inserting User failed %s", err)
+	}
+}
+
+func TestMigrateAgain(t *testing.T) {
+	err := db.Migrate()
+	if err != nil {
+		t.Errorf("Inserting User failed %s", err)
+	}
 }

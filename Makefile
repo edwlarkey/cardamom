@@ -9,7 +9,7 @@ run:
 	go run -race main.go
 
 test:
-	go test cmd/web/*
+	go test ./...
 
 generate:
 	go generate pkg/assets/assets_generate.go
