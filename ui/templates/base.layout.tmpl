@@ -37,7 +37,7 @@
             <div class="buttons">
               <form class="form-inline" action='/app/user/logout' method='POST'>
                   {{ .CSRFField }}
-                  <input class="button is-primary" type="submit" value="Logout ({{.AuthenticatedUser.Name}}">
+                  <input class="button is-primary" type="submit" value="Logout ({{.AuthenticatedUser.Email}})">
               </form>
             </div>
           {{else}}

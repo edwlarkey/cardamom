@@ -13,8 +13,7 @@ func (d *DB) InsertUser(email, password string) error {
 		return err
 	}
 
-	stmt := `INSERT INTO users (email, password, created_at)
-    VALUES($1, $2, now())`
+	stmt := "INSERT INTO users (email, password, created_at) VALUES($1, $2, now())"
 
 	_, err = d.DB.Exec(stmt, email, string(hashedPassword))
 	if err != nil {
@@ -24,36 +23,38 @@ func (d *DB) InsertUser(email, password string) error {
 }
 
 func (d *DB) AuthenticateUser(email, password string) (*models.User, error) {
-	var id int64
-	var hashedPassword []byte
-	row := d.DB.QueryRow("SELECT id, password FROM users WHERE email = $1", email)
-	err := row.Scan(&id, &hashedPassword)
+	user := &models.User{}
+
+	stmt := "SELECT id, email, password, created_at FROM users WHERE email = $1"
+	err := d.DB.Get(user, stmt, email)
 	if err == sql.ErrNoRows {
 		return nil, models.ErrInvalidCredentials
 	} else if err != nil {
 		return nil, err
 	}
 
-	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
+	err = bcrypt.CompareHashAndPassword(user.Password, []byte(password))
 	if err == bcrypt.ErrMismatchedHashAndPassword {
 		return nil, models.ErrInvalidCredentials
 	} else if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	user.Password = nil
+
+	return user, nil
 }
 
 func (d *DB) GetUser(id int64) (*models.User, error) {
-	s := &models.User{}
+	user := &models.User{}
 
-	stmt := `SELECT id, username, email, created_at FROM users WHERE id = $1`
-	err := d.DB.Get(&s, stmt, id)
+	stmt := "SELECT id, email, created_at FROM users WHERE id = $1"
+	err := d.DB.Get(user, stmt, id)
 	if err == sql.ErrNoRows {
 		return nil, models.ErrNoRecord
 	} else if err != nil {
 		return nil, err
 	}
 
-	return s, nil
+	return user, nil
 }

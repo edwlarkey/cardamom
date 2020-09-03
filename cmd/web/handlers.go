@@ -354,6 +354,8 @@ func (app *application) loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	app.PrettyPrint(user)
+
 	session.Values["user"] = user
 	session.AddFlash("Welcome!")
 
