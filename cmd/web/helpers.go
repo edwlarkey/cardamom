@@ -7,8 +7,8 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/gorilla/csrf"
 	"github.com/edwlarkey/cardamom/pkg/models"
+	"github.com/gorilla/csrf"
 )
 
 func (app *application) serverError(w http.ResponseWriter, err error) {

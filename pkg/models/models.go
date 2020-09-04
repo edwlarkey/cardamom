@@ -22,7 +22,7 @@ type Bookmark struct {
 	Title     string
 	URL       string `gorm:"uniqueIndex"`
 	Read      int    `gorm:"default 0"`
-	Tags      []*Tag
+	Tags      []*Tag `gorm:"many2many:bookmark_tags;jointForeignKey:tag_id"`
 }
 
 type Tag struct {
