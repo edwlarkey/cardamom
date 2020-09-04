@@ -20,6 +20,7 @@ type Bookmark struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 	Title     string
+	Content   string
 	URL       string `gorm:"uniqueIndex"`
 	Read      int    `gorm:"default 0"`
 	Tags      []*Tag `gorm:"many2many:bookmark_tags;jointForeignKey:tag_id"`
