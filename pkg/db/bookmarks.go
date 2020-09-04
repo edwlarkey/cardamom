@@ -13,39 +13,24 @@ func (m *DB) InsertBookmark(bookmark *models.Bookmark) error {
 
 // UpdateBookmark updates a single bookmark in the DB
 func (m *DB) UpdateBookmark(id int64, title string, tags []string) (*models.Bookmark, error) {
-	tx := m.DB.Begin()
-	if tx.Error != nil {
-		return nil, tx.Error
-	}
-
 	bookmark := &models.Bookmark{}
-	if m.DB.First(&bookmark, id).RecordNotFound() {
+	err := m.DB.First(&bookmark, id).Error
+	if err != nil {
 		return nil, models.ErrNoRecord
 	}
 
 	bookmark.Title = title
-	res := m.DB.Model(&bookmark).Association("Tags").Clear()
+	m.DB.Model(&bookmark).Association("Tags").Clear()
 
 	for _, tag_name := range tags {
 		tag, err := m.CreateIfNotExists(tag_name)
 		if err != nil {
-			tx.Rollback()
 			return nil, err
 		}
-		res := m.DB.Model(&bookmark).Association("Tags").Append(tag)
-
-		if res.Error != nil {
-			tx.Rollback()
-			return nil, res.Error
-		}
+		m.DB.Model(&bookmark).Association("Tags").Append(tag)
 	}
 
-	tx.Save(&bookmark)
-
-	commit := tx.Commit()
-	if commit.Error != nil {
-		return nil, res.Error
-	}
+	m.DB.Save(&bookmark)
 
 	return bookmark, nil
 }
@@ -54,7 +39,8 @@ func (m *DB) UpdateBookmark(id int64, title string, tags []string) (*models.Book
 func (m *DB) GetBookmark(id int64) (*models.Bookmark, error) {
 	bookmark := &models.Bookmark{}
 
-	if m.DB.Preload("Tags").First(&bookmark, id).RecordNotFound() {
+	err := m.DB.Preload("Tags").First(&bookmark, id).Error
+	if err != nil {
 		return nil, models.ErrNoRecord
 	}
 

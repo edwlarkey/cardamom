@@ -17,7 +17,8 @@ func (m *DB) InsertTag(name string) (int, error) {
 func (m *DB) GetTag(id int) (*models.Tag, error) {
 	tag := &models.Tag{}
 
-	if m.DB.First(&tag, id).RecordNotFound() {
+	err := m.DB.First(&tag, id).Error
+	if err != nil {
 		return nil, models.ErrNoRecord
 	}
 

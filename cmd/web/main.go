@@ -11,10 +11,10 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	"github.com/gorilla/sessions"
 	"github.com/edwlarkey/cardamom/pkg/config"
 	"github.com/edwlarkey/cardamom/pkg/db"
 	"github.com/edwlarkey/cardamom/pkg/models"
+	"github.com/gorilla/sessions"
 )
 
 type application struct {
@@ -25,7 +25,6 @@ type application struct {
 	db       interface {
 		Connect(string, string) error
 		Migrate() error
-		Close()
 		LatestBookmarks() ([]*models.Bookmark, error)
 		GetBookmark(int64) (*models.Bookmark, error)
 		InsertBookmark(*models.Bookmark) error
@@ -87,9 +86,6 @@ func main() {
 	if err != nil {
 		errorLog.Fatal(err)
 	}
-
-	// Defer closing our DB connection pool
-	defer app.db.Close()
 
 	// Set up http server, including app routes
 	srv := &http.Server{
