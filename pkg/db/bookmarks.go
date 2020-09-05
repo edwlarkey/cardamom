@@ -12,7 +12,7 @@ func (m *DB) InsertBookmark(bookmark *models.Bookmark) error {
 }
 
 // UpdateBookmark updates a single bookmark in the DB
-func (m *DB) UpdateBookmark(id int64, title string, tags []string) (*models.Bookmark, error) {
+func (m *DB) UpdateBookmark(id uint, title string, tags []string) (*models.Bookmark, error) {
 	bookmark := &models.Bookmark{}
 	err := m.DB.First(&bookmark, id).Error
 	if err != nil {
@@ -36,7 +36,7 @@ func (m *DB) UpdateBookmark(id int64, title string, tags []string) (*models.Book
 }
 
 // GetBookmark gets a single bookmark from the DB
-func (m *DB) GetBookmark(id int64) (*models.Bookmark, error) {
+func (m *DB) GetBookmark(id uint) (*models.Bookmark, error) {
 	bookmark := &models.Bookmark{}
 
 	err := m.DB.Preload("Tags").First(&bookmark, id).Error

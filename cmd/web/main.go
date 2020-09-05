@@ -26,14 +26,14 @@ type application struct {
 		Connect(string, string) error
 		Migrate() error
 		LatestBookmarks() ([]*models.Bookmark, error)
-		GetBookmark(int64) (*models.Bookmark, error)
+		GetBookmark(uint) (*models.Bookmark, error)
 		InsertBookmark(*models.Bookmark) error
-		UpdateBookmark(int64, string, []string) (*models.Bookmark, error)
+		UpdateBookmark(uint, string, []string) (*models.Bookmark, error)
 		GetTags() ([]*models.Tag, error)
-		InsertTag(string) (int, error)
+		InsertTag(string) (uint, error)
 		InsertUser(string, string, string) error
 		AuthenticateUser(string, string) (*models.User, error)
-		GetUser(int) (*models.User, error)
+		GetUser(uint) (*models.User, error)
 	}
 	templates *templates
 }
@@ -48,8 +48,8 @@ func main() {
 	}
 
 	var dsn string
-	switch conf.Database.Type {
-	case "sqlite3":
+	switch conf.Database.Dialect {
+	case "sqlite":
 		dsn = conf.Database.Database
 	default:
 		dsn = fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", conf.Database.Server, conf.Database.Port, conf.Database.User, conf.Database.Database, conf.Database.Password)
@@ -77,7 +77,7 @@ func main() {
 	}
 
 	// Connect to the DB
-	err := app.db.Connect(conf.Database.Type, dsn)
+	err := app.db.Connect(conf.Database.Dialect, dsn)
 	if err != nil {
 		errorLog.Fatal(err)
 	}

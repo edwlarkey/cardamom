@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/gob"
 	"errors"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -15,30 +14,21 @@ var (
 )
 
 type Bookmark struct {
-	ID        int64 `gorm:"primaryKey"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Title     string
-	Content   string
-	URL       string `gorm:"uniqueIndex"`
-	Read      int    `gorm:"default 0"`
-	Tags      []*Tag `gorm:"many2many:bookmark_tags;jointForeignKey:tag_id"`
+	gorm.Model
+	Title   string
+	Content string
+	URL     string `gorm:"uniqueIndex"`
+	Read    int    `gorm:"default 0"`
+	Tags    []*Tag `gorm:"many2many:bookmark_tags"`
 }
 
 type Tag struct {
-	ID        int64 `gorm:"primaryKey"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name      string         `gorm:"uniqueIndex"`
+	gorm.Model
+	Name string `gorm:"uniqueIndex"`
 }
 
 type User struct {
-	ID             int64 `gorm:"primaryKey"`
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	DeletedAt      gorm.DeletedAt `gorm:"index"`
+	gorm.Model
 	Name           string
 	Email          string `gorm:"uniqueIndex"`
 	HashedPassword []byte

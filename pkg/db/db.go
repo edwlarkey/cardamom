@@ -1,11 +1,15 @@
 package db
 
 import (
+	"errors"
+
 	"github.com/edwlarkey/cardamom/pkg/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+var DialectNotSupported = errors.New("Dialect not supported. [sqlite, postgres]")
 
 type DB struct {
 	DB *gorm.DB
@@ -25,6 +29,8 @@ func (d *DB) Connect(dialect string, dsn string) error {
 		if err != nil {
 			return err
 		}
+	default:
+		return DialectNotSupported
 	}
 
 	d.DB = db

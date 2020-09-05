@@ -35,7 +35,7 @@ func (m *DB) AuthenticateUser(email, password string) (*models.User, error) {
 	return &user, nil
 }
 
-func (m *DB) GetUser(id int) (*models.User, error) {
+func (m *DB) GetUser(id uint) (*models.User, error) {
 	user := &models.User{}
 	if err := m.DB.First(&user, id).Error; err != nil {
 		return nil, models.ErrNoRecord

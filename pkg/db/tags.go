@@ -5,16 +5,16 @@ import (
 )
 
 // Insert adds an tag to the DB
-func (m *DB) InsertTag(name string) (int, error) {
+func (m *DB) InsertTag(name string) (uint, error) {
 	tag := &models.Tag{Name: name}
 
 	m.DB.Create(&tag)
 
-	return int(tag.ID), nil
+	return tag.ID, nil
 }
 
 // Get gets a single tag from the DB
-func (m *DB) GetTag(id int) (*models.Tag, error) {
+func (m *DB) GetTag(id uint) (*models.Tag, error) {
 	tag := &models.Tag{}
 
 	err := m.DB.First(&tag, id).Error
