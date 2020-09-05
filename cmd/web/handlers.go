@@ -24,10 +24,6 @@ func RouteUintParam(param string) uint {
 		return 0
 	}
 
-	if value < 0 {
-		return 0
-	}
-
 	return uint(value)
 }
 

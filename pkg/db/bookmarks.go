@@ -20,14 +20,20 @@ func (m *DB) UpdateBookmark(id uint, title string, tags []string) (*models.Bookm
 	}
 
 	bookmark.Title = title
-	m.DB.Model(&bookmark).Association("Tags").Clear()
+	err = m.DB.Model(&bookmark).Association("Tags").Clear()
+	if err != nil {
+		return nil, err
+	}
 
 	for _, tag_name := range tags {
 		tag, err := m.CreateIfNotExists(tag_name)
 		if err != nil {
 			return nil, err
 		}
-		m.DB.Model(&bookmark).Association("Tags").Append(tag)
+		err = m.DB.Model(&bookmark).Association("Tags").Append(tag)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	m.DB.Save(&bookmark)
