@@ -20,11 +20,12 @@ func (m *DB) InsertUser(name, email, password string) error {
 
 func (m *DB) AuthenticateUser(email, password string) (*models.User, error) {
 	user := models.User{}
-	if m.DB.Where("email = ?", email).First(&user).RecordNotFound() {
+	err := m.DB.Where("email = ?", email).First(&user).Error
+	if err != nil {
 		return nil, models.ErrInvalidCredentials
 	}
 
-	err := bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password))
+	err = bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password))
 	if err == bcrypt.ErrMismatchedHashAndPassword {
 		return nil, models.ErrInvalidCredentials
 	} else if err != nil {
@@ -34,7 +35,7 @@ func (m *DB) AuthenticateUser(email, password string) (*models.User, error) {
 	return &user, nil
 }
 
-func (m *DB) GetUser(id int) (*models.User, error) {
+func (m *DB) GetUser(id uint) (*models.User, error) {
 	user := &models.User{}
 	if err := m.DB.First(&user, id).Error; err != nil {
 		return nil, models.ErrNoRecord

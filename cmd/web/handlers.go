@@ -6,10 +6,10 @@ import (
 	"strconv"
 
 	"github.com/antchfx/goreadly"
-	"github.com/gorilla/mux"
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/edwlarkey/cardamom/pkg/forms"
 	"github.com/edwlarkey/cardamom/pkg/models"
+	"github.com/gorilla/mux"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 type Option struct {
@@ -17,18 +17,14 @@ type Option struct {
 	Selected bool
 }
 
-// RouteInt64Param returns an URL route parameter as int64.
-func RouteInt64Param(param string) int64 {
-	value, err := strconv.ParseInt(param, 10, 64)
+// RouteUintParam returns an URL route parameter as uint
+func RouteUintParam(param string) uint {
+	value, err := strconv.ParseUint(param, 0, 0)
 	if err != nil {
 		return 0
 	}
 
-	if value < 0 {
-		return 0
-	}
-
-	return value
+	return uint(value)
 }
 
 func (app *application) ping(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +50,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 func (app *application) showBookmark(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	id := RouteInt64Param(params["id"])
+	id := RouteUintParam(params["id"])
 	if id < 1 {
 		app.notFound(w)
 		return
@@ -77,7 +73,7 @@ func (app *application) showBookmark(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) editBookmarkForm(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	id := RouteInt64Param(params["id"])
+	id := RouteUintParam(params["id"])
 	if id < 1 {
 		app.notFound(w)
 		return
@@ -130,7 +126,7 @@ func (app *application) updateBookmark(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := RouteInt64Param(form.Get("id"))
+	id := RouteUintParam(form.Get("id"))
 	if id < 1 {
 		app.notFound(w)
 		return

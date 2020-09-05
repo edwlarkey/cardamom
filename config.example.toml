@@ -1,5 +1,5 @@
 [database]
-type = "sqlite3"
+dialect = "sqlite"
 database = "db.sqlite"
 
 [web]

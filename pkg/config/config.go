@@ -6,7 +6,7 @@ type Config struct {
 }
 
 type database struct {
-	Type     string
+	Dialect  string
 	Server   string
 	Port     string
 	Database string

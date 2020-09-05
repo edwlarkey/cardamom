@@ -2,7 +2,7 @@ package mock
 
 type DB struct{}
 
-func (d *DB) Connect(dbtype string, dsn string) error {
+func (d *DB) Connect(dialect string, dsn string) error {
 	return nil
 }
 
