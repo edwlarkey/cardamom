@@ -20,6 +20,7 @@ type templateData struct {
 	Form              *forms.Form
 	Bookmark          *models.Bookmark
 	Bookmarks         []*models.Bookmark
+	Tags              []*models.Tag
 	Options           []Option
 }
 
@@ -83,9 +84,9 @@ func initTemplates(base string) *templates {
 	template.Must(createTemplate.Parse(templateFiles["templates/create.page.tmpl"]))
 	template.Must(createTemplate.Parse(templateFiles["templates/base.layout.tmpl"]))
 
-	createTagTemplate := template.New("create_tag.page.tmpl").Funcs(functions)
-	template.Must(createTagTemplate.Parse(templateFiles["templates/create_tag.page.tmpl"]))
-	template.Must(createTagTemplate.Parse(templateFiles["templates/base.layout.tmpl"]))
+	tagListTemplate := template.New("tags.page.tmpl").Funcs(functions)
+	template.Must(tagListTemplate.Parse(templateFiles["templates/tags.page.tmpl"]))
+	template.Must(tagListTemplate.Parse(templateFiles["templates/base.layout.tmpl"]))
 
 	signupTemplate := template.New("signup.page.tmpl").Funcs(functions)
 	template.Must(signupTemplate.Parse(templateFiles["templates/signup.page.tmpl"]))
@@ -99,7 +100,7 @@ func initTemplates(base string) *templates {
 	templateMap["show.page.tmpl"] = showTemplate
 	templateMap["edit.page.tmpl"] = editTemplate
 	templateMap["create.page.tmpl"] = createTemplate
-	templateMap["create_tag.page.tmpl"] = createTagTemplate
+	templateMap["tags.page.tmpl"] = tagListTemplate
 	templateMap["signup.page.tmpl"] = signupTemplate
 	templateMap["login.page.tmpl"] = loginTemplate
 

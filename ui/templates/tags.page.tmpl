@@ -1,0 +1,38 @@
+{{define "title"}}{{.SiteTitle}} - Home{{end}}
+
+{{define "content"}}
+<h2 class="title is-2">Tags</h2>
+<div class="columns">
+<div class="column is-one-third">
+<form id="tag-create" action='/app/tag/create' method='POST'>
+    {{ .CSRFField }}
+    {{with .Form}}
+        {{with .Errors.Get "generic"}}
+            <div class="notification is-danger">
+              <button class="delete"></button>
+              {{.}}
+            </div>
+        {{end}}
+      <div class="field has-addons">
+        <div class="control">
+          <input class="input" type="text" placeholder="Create new tag" name="name" value="{{.Get "name"}}" autofocus="autofocus">
+        </div>
+        <div class="control">
+          <button type="submit" class="button is-link">Create</button>
+        </div>
+      </div>
+    {{end}}
+</form>
+</div>
+</div>
+
+  {{if .Tags}}
+      {{range .Tags}}
+      <ul>
+        <li><a href="#" target="_blank" alt="{{.Name}}">{{.Name}}</a></li>
+      </ul>
+      {{end}}
+  {{else}}
+      <p>There are no tags yet. Try creating one.</p>
+  {{end}}
+{{end}}

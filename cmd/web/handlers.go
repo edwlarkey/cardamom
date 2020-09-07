@@ -88,15 +88,11 @@ func (app *application) editBookmarkForm(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	app.PrettyPrint(bookmark)
-
 	options, err := app.getOptions(bookmark)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
-
-	app.PrettyPrint(options)
 
 	app.render(w, r, "edit.page.tmpl", &templateData{
 		Bookmark: bookmark,
@@ -220,12 +216,6 @@ func (app *application) createBookmark(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/app/bookmark/%v", bookmark.ID), http.StatusSeeOther)
 }
 
-func (app *application) createTagForm(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, "create_tag.page.tmpl", &templateData{
-		Form: forms.New(nil),
-	})
-}
-
 func (app *application) createTag(w http.ResponseWriter, r *http.Request) {
 	session, err := app.store.Get(r, "cardamom-session")
 	if err != nil {
@@ -246,7 +236,7 @@ func (app *application) createTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := app.db.InsertTag(form.Get("name"))
+	_, err = app.db.InsertTag(form.Get("name"))
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -259,7 +249,20 @@ func (app *application) createTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/app/tag/%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, "/app/tag", http.StatusSeeOther)
+}
+
+func (app *application) tagList(w http.ResponseWriter, r *http.Request) {
+	v, err := app.db.GetTags()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.render(w, r, "tags.page.tmpl", &templateData{
+		Tags: v,
+		Form: forms.New(nil),
+	})
 }
 
 func (app *application) signupUserForm(w http.ResponseWriter, r *http.Request) {
