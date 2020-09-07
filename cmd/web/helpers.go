@@ -28,28 +28,30 @@ func (app *application) PrettyPrint(v interface{}) (err error) {
 }
 
 func (app *application) getOptions(bookmark *models.Bookmark) ([]Option, error) {
+	var options []Option
+	s := make(map[uint]struct{})
+
 	t, err := app.db.GetTags()
 	if err != nil {
 		return nil, err
 	}
 
-	var options []Option
+	for _, bt := range bookmark.Tags {
+		s[bt.ID] = struct{}{}
+	}
 
 	for _, item := range t {
 		var option Option
 
-		for i, bt := range bookmark.Tags {
-			if item.ID == bt.ID {
-				option = Option{item.Name, true}
-				options = append(options, option)
-				break
-			}
-
-			if i == len(bookmark.Tags)-1 {
-				option = Option{item.Name, false}
-				options = append(options, option)
-			}
+		_, ok := s[item.ID]
+		if ok {
+			option = Option{item.Name, true}
+			options = append(options, option)
+		} else {
+			option = Option{item.Name, false}
+			options = append(options, option)
 		}
+
 	}
 
 	return options, nil

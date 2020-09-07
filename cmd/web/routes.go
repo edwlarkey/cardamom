@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 
+	"github.com/edwlarkey/cardamom/pkg/assets"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
-	"github.com/edwlarkey/cardamom/pkg/assets"
 )
 
 func (app *application) routes() http.Handler {
@@ -27,7 +27,7 @@ func (app *application) routes() http.Handler {
 	auth.HandleFunc("/bookmark/{id}", app.showBookmark).Methods("GET")
 
 	// Tags
-	auth.HandleFunc("/tag/create", app.createTagForm).Methods("GET")
+	auth.HandleFunc("/tag", app.tagList).Methods("GET")
 	auth.HandleFunc("/tag/create", app.createTag).Methods("POST")
 
 	// User
