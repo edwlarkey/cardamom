@@ -28,8 +28,10 @@ type application struct {
 		LatestBookmarks() ([]*models.Bookmark, error)
 		GetBookmark(uint) (*models.Bookmark, error)
 		InsertBookmark(*models.Bookmark) error
-		UpdateBookmark(uint, string, []string) (*models.Bookmark, error)
+		UpdateBookmark(*models.Bookmark) error
 		GetTags() ([]*models.Tag, error)
+		GetTagByName(string) (*models.Tag, error)
+		CreateIfNotExists(string) (*models.Tag, error)
 		InsertTag(string) (uint, error)
 		InsertUser(string, string, string) error
 		AuthenticateUser(string, string) (*models.User, error)

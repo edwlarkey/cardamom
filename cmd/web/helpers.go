@@ -3,13 +3,51 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"runtime/debug"
+	"strconv"
 	"time"
 
+	"github.com/antchfx/goreadly"
 	"github.com/edwlarkey/cardamom/pkg/models"
 	"github.com/gorilla/csrf"
+	"github.com/microcosm-cc/bluemonday"
 )
+
+// routeUintParam returns an URL route parameter as uint
+func routeUintParam(param string) uint {
+	value, err := strconv.ParseUint(param, 0, 0)
+	if err != nil {
+		return 0
+	}
+
+	return uint(value)
+}
+
+func getPageContent(URL string) (title string, content template.HTML, err error) {
+	p := bluemonday.UGCPolicy()
+	p.AddTargetBlankToFullyQualifiedLinks(true)
+
+	/* #nosec */
+	resp, err := http.Get(URL)
+	if err != nil {
+		return "", "", err
+	}
+	defer resp.Body.Close()
+
+	page, err := goreadly.ParseResponse(resp)
+	if err != nil {
+		return "", "", err
+	}
+
+	title = page.Title
+
+	/* #nosec */
+	content = template.HTML(p.Sanitize(page.Body))
+
+	return title, content, nil
+}
 
 func (app *application) serverError(w http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
