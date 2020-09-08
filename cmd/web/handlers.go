@@ -3,28 +3,15 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
-	"github.com/antchfx/goreadly"
 	"github.com/edwlarkey/cardamom/pkg/forms"
 	"github.com/edwlarkey/cardamom/pkg/models"
 	"github.com/gorilla/mux"
-	"github.com/microcosm-cc/bluemonday"
 )
 
 type Option struct {
 	Value    string
 	Selected bool
-}
-
-// RouteUintParam returns an URL route parameter as uint
-func RouteUintParam(param string) uint {
-	value, err := strconv.ParseUint(param, 0, 0)
-	if err != nil {
-		return 0
-	}
-
-	return uint(value)
 }
 
 func (app *application) ping(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +37,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 func (app *application) showBookmark(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	id := RouteUintParam(params["id"])
+	id := routeUintParam(params["id"])
 	if id < 1 {
 		app.notFound(w)
 		return
@@ -73,7 +60,7 @@ func (app *application) showBookmark(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) editBookmarkForm(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	id := RouteUintParam(params["id"])
+	id := routeUintParam(params["id"])
 	if id < 1 {
 		app.notFound(w)
 		return
@@ -122,13 +109,47 @@ func (app *application) updateBookmark(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := RouteUintParam(form.Get("id"))
+	id := routeUintParam(form.Get("id"))
 	if id < 1 {
 		app.notFound(w)
 		return
 	}
 
-	bookmark, err := app.db.UpdateBookmark(id, form.Get("title"), r.Form["tags"])
+	bookmark, err := app.db.GetBookmark(id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	bookmark.URL = form.Get("url")
+
+	title, content, err := getPageContent(bookmark.URL)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	if len(form.Get("title")) > 0 {
+		bookmark.Title = form.Get("title")
+	} else {
+		bookmark.Title = title
+	}
+	bookmark.Content = content
+
+	// Remove all the tags
+	bookmark.Tags = nil
+	// Add back tags that were selected
+	for _, t := range r.Form["tags"] {
+		tag, err := app.db.CreateIfNotExists(t)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		bookmark.Tags = append(bookmark.Tags, tag)
+	}
+
+	app.PrettyPrint(bookmark)
+
+	err = app.db.UpdateBookmark(bookmark)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -173,33 +194,20 @@ func (app *application) createBookmark(w http.ResponseWriter, r *http.Request) {
 	bookmark := models.Bookmark{}
 	bookmark.URL = form.Get("url")
 
+	title, content, err := getPageContent(bookmark.URL)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 	if len(form.Get("title")) > 0 {
 		bookmark.Title = form.Get("title")
 	} else {
-		p := bluemonday.UGCPolicy()
-		p.AddTargetBlankToFullyQualifiedLinks(true)
-
-		resp, err := http.Get(bookmark.URL)
-		if err != nil {
-			app.serverError(w, err)
-			return
-		}
-		defer resp.Body.Close()
-
-		page, err := goreadly.ParseResponse(resp)
-		if err != nil {
-			app.serverError(w, err)
-			return
-		}
-
-		bookmark.Title = page.Title
+		bookmark.Title = title
 	}
-
-	app.PrettyPrint(&bookmark)
+	bookmark.Content = content
 
 	err = app.db.InsertBookmark(&bookmark)
-
-	app.PrettyPrint(&bookmark)
 
 	if err != nil {
 		app.serverError(w, err)

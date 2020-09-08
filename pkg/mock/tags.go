@@ -28,6 +28,24 @@ func (m *DB) GetTag(id uint) (*models.Tag, error) {
 	}
 }
 
+func (m *DB) GetTagByName(name string) (*models.Tag, error) {
+	switch name {
+	case "Tag Title Here":
+		return mockTag, nil
+	default:
+		return nil, models.ErrNoRecord
+	}
+}
+
+func (m *DB) CreateIfNotExists(name string) (*models.Tag, error) {
+	switch name {
+	case "Tag Title Here":
+		return mockTag, nil
+	default:
+		return nil, models.ErrNoRecord
+	}
+}
+
 func (m *DB) GetTags() ([]*models.Tag, error) {
 	return []*models.Tag{mockTag}, nil
 }

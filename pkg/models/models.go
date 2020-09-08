@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/gob"
 	"errors"
+	"html/template"
 
 	"gorm.io/gorm"
 )
@@ -16,7 +17,7 @@ var (
 type Bookmark struct {
 	gorm.Model
 	Title   string
-	Content string
+	Content template.HTML
 	URL     string `gorm:"uniqueIndex"`
 	Read    int    `gorm:"default 0"`
 	Tags    []*Tag `gorm:"many2many:bookmark_tags"`

@@ -7,6 +7,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var DialectNotSupported = errors.New("Dialect not supported. [sqlite, postgres]")
@@ -20,7 +21,7 @@ func (d *DB) Connect(dialect string, dsn string) error {
 	var err error
 	switch dialect {
 	case "sqlite":
-		db, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+		db, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 		if err != nil {
 			return err
 		}

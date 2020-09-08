@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/edwlarkey/cardamom/pkg/models"
+	"gorm.io/gorm/clause"
 )
 
 // InsertBookmark adds a bookmark to the DB
@@ -12,33 +13,18 @@ func (m *DB) InsertBookmark(bookmark *models.Bookmark) error {
 }
 
 // UpdateBookmark updates a single bookmark in the DB
-func (m *DB) UpdateBookmark(id uint, title string, tags []string) (*models.Bookmark, error) {
-	bookmark := &models.Bookmark{}
-	err := m.DB.First(&bookmark, id).Error
+func (m *DB) UpdateBookmark(bookmark *models.Bookmark) error {
+	err := m.DB.Model(bookmark).Association("Tags").Replace(bookmark.Tags)
 	if err != nil {
-		return nil, models.ErrNoRecord
+		return err
 	}
 
-	bookmark.Title = title
-	err = m.DB.Model(&bookmark).Association("Tags").Clear()
+	err = m.DB.Omit(clause.Associations).Save(bookmark).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	for _, tag_name := range tags {
-		tag, err := m.CreateIfNotExists(tag_name)
-		if err != nil {
-			return nil, err
-		}
-		err = m.DB.Model(&bookmark).Association("Tags").Append(tag)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	m.DB.Save(&bookmark)
-
-	return bookmark, nil
+	return nil
 }
 
 // GetBookmark gets a single bookmark from the DB

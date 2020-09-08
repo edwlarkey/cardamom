@@ -25,6 +25,18 @@ func (m *DB) GetTag(id uint) (*models.Tag, error) {
 	return tag, nil
 }
 
+// Get gets a single tag from the DB by name
+func (m *DB) GetTagByName(name string) (*models.Tag, error) {
+	tag := &models.Tag{}
+
+	err := m.DB.Where("name = ?", name).First(&tag).Error
+	if err != nil {
+		return nil, models.ErrNoRecord
+	}
+
+	return tag, nil
+}
+
 // CreateIfNotExists gets a single tag from the DB or create it if it doesn't exist
 func (m *DB) CreateIfNotExists(name string) (*models.Tag, error) {
 	var tag models.Tag
