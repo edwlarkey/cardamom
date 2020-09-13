@@ -34,6 +34,18 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (app *application) listBookmark(w http.ResponseWriter, r *http.Request) {
+	v, err := app.db.GetBookmarks()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.render(w, r, "home.page.tmpl", &templateData{
+		Bookmarks: v,
+	})
+}
+
 func (app *application) showBookmark(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 

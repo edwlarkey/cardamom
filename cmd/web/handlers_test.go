@@ -37,6 +37,7 @@ func TestShowBookmarkAnon(t *testing.T) {
 		wantCode int
 		wantBody []byte
 	}{
+		{"Bookmark List", "/app/bookmark", http.StatusTemporaryRedirect, nil},
 		{"Valid ID", "/app/bookmark/1", http.StatusTemporaryRedirect, nil},
 		{"Non-existent ID", "/app/bookmark/2", http.StatusTemporaryRedirect, nil},
 		{"Negative ID", "/app/bookmark/-1", http.StatusTemporaryRedirect, nil},
@@ -84,6 +85,7 @@ func TestShowBookmark(t *testing.T) {
 		wantCode int
 		wantBody []byte
 	}{
+		{"Bookmark List", "/app/bookmark", http.StatusOK, []byte("Bookmark Title Here")},
 		{"Valid ID", "/app/bookmark/1", http.StatusOK, []byte("Bookmark Title Here")},
 		{"Non-existent ID", "/app/bookmark/2", http.StatusNotFound, nil},
 		{"Negative ID", "/app/bookmark/-1", http.StatusNotFound, nil},

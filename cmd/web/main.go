@@ -26,6 +26,7 @@ type application struct {
 		Connect(string, string) error
 		Migrate() error
 		LatestBookmarks() ([]*models.Bookmark, error)
+		GetBookmarks() ([]*models.Bookmark, error)
 		GetBookmark(uint) (*models.Bookmark, error)
 		InsertBookmark(*models.Bookmark) error
 		UpdateBookmark(*models.Bookmark) error
