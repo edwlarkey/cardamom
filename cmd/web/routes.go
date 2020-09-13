@@ -20,6 +20,7 @@ func (app *application) routes() http.Handler {
 	auth.Use(app.requireAuthenticatedUser)
 
 	// Bookmarks
+	auth.HandleFunc("/bookmark", app.listBookmark).Methods("GET")
 	auth.HandleFunc("/bookmark/create", app.createBookmarkForm).Methods("GET")
 	auth.HandleFunc("/bookmark/create", app.createBookmark).Methods("POST")
 	auth.HandleFunc("/bookmark/{id}/edit", app.editBookmarkForm).Methods("GET")

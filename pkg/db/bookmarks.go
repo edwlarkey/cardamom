@@ -39,6 +39,20 @@ func (m *DB) GetBookmark(id uint) (*models.Bookmark, error) {
 	return bookmark, nil
 }
 
+// GetBookmarks gets all bookmarks
+func (m *DB) GetBookmarks() ([]*models.Bookmark, error) {
+	v := []models.Bookmark{}
+	m.DB.Preload("Tags").Find(&v)
+
+	bookmarks := []*models.Bookmark{}
+
+	for i := 0; i < len(v); i++ {
+		bookmarks = append(bookmarks, &v[i])
+	}
+
+	return bookmarks, nil
+}
+
 // LatestBookmarks gets the 100 most recent bookmarks from the DB
 func (m *DB) LatestBookmarks() ([]*models.Bookmark, error) {
 	v := []models.Bookmark{}

@@ -25,6 +25,10 @@ func (m *DB) UpdateBookmark(*models.Bookmark) error {
 	return nil
 }
 
+func (m *DB) GetBookmarks() ([]*models.Bookmark, error) {
+	return []*models.Bookmark{mockBookmark}, nil
+}
+
 func (m *DB) GetBookmark(id uint) (*models.Bookmark, error) {
 	switch id {
 	case 1:
