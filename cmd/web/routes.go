@@ -39,7 +39,7 @@ func (app *application) routes() http.Handler {
 	auth.HandleFunc("/user/logout", app.logoutUser).Methods("POST")
 
 	// Static assets
-	r.PathPrefix("/static/").Handler(assets.Handler)
+	r.PathPrefix("/static/").Handler(http.FileServer(assets.Assets))
 	r.HandleFunc("/ping", app.ping)
 
 	// Home

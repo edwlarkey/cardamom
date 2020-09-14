@@ -70,17 +70,22 @@ func main() {
 		HttpOnly: true,
 	}
 
+	t, err := initTemplates()
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
 	app := &application{
 		errorLog:  errorLog,
 		infoLog:   infoLog,
 		store:     store,
 		config:    conf,
-		templates: initTemplates("base"),
+		templates: t,
 		db:        &db.DB{},
 	}
 
 	// Connect to the DB
-	err := app.db.Connect(conf.Database.Dialect, dsn)
+	err = app.db.Connect(conf.Database.Dialect, dsn)
 	if err != nil {
 		errorLog.Fatal(err)
 	}
