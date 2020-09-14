@@ -38,12 +38,17 @@ func newTestApplication(t *testing.T) *application {
 		HttpOnly: true,
 	}
 
+	tc, err := initTemplates()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	return &application{
 		errorLog:  log.New(ioutil.Discard, "", 0),
 		infoLog:   log.New(ioutil.Discard, "", 0),
 		store:     store,
 		db:        &mock.DB{},
-		templates: initTemplates("base"),
+		templates: tc,
 	}
 }
 

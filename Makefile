@@ -12,7 +12,7 @@ test:
 	go test cmd/web/*
 
 generate:
-	go generate pkg/assets/assets_generate.go
+	go generate pkg/assets/assets.go
 
 lint:
 	docker run --rm -v ${PROJECT_PATH}:/app -w /app golangci/golangci-lint:v1.30.0 golangci-lint run -v

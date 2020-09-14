@@ -21,7 +21,7 @@ func (d *DB) Connect(dialect string, dsn string) error {
 	var err error
 	switch dialect {
 	case "sqlite":
-		db, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
+		db, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Warn)})
 		if err != nil {
 			return err
 		}
