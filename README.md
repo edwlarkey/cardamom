@@ -4,15 +4,8 @@ A Go web app for storing bookmarks
 
 ## Build
 
-Get fileb0x
 ```
-go get -u github.com/UnnoTed/fileb0x
-```
-
-Build the app
-
-```
-make build
+make
 ```
 
 ## Run
