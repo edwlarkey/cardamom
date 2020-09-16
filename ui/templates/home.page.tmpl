@@ -2,25 +2,19 @@
 
 {{define "content"}}
   {{if .Bookmarks}}
+      <ul>
       {{range .Bookmarks}}
-    <div class="card">
-      <header class="card-header">
-        <p class="card-header-title">
-          <a href="{{.URL}}" target="_blank" alt="{{.Title}}">{{.Title}}</a>
-        </p>
-      </header>
-      <div class="card-content">
-        <div class="content">
-          {{.Content}}
-          <br>
-          <time datetime="{{.CreatedAt}}">{{.CreatedAt | humanDate}}</time>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a href="/app/bookmark/{{.ID}}" class="card-footer-item">View</a>
-      </footer>
-    </div>
+        <li><a href="/app/bookmark/{{.ID}}" class="is-size-1-desktop" alt="{{.Title}}">{{.Title}}</a> <time datetime="{{.CreatedAt}}">{{.CreatedAt | humanDate}}</time>
+        {{if .Tags}}
+           <div class="tags">
+          {{range .Tags}}
+            <span class="tag is-dark">{{.Name}}</span>
+          {{end}}
+          </div>
+        {{end}}
+        </li>
       {{end}}
+      </ul>
   {{else}}
       <article class="tile is-child notification">
         <p>There's nothing to see here...yet</p>

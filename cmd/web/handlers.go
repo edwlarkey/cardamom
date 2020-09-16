@@ -159,8 +159,6 @@ func (app *application) updateBookmark(w http.ResponseWriter, r *http.Request) {
 		bookmark.Tags = append(bookmark.Tags, tag)
 	}
 
-	app.PrettyPrint(bookmark)
-
 	err = app.db.UpdateBookmark(bookmark)
 	if err != nil {
 		app.serverError(w, err)

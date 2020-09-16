@@ -29,6 +29,8 @@ func getPageContent(URL string) (title string, content template.HTML, err error)
 	p := bluemonday.UGCPolicy()
 	p.AddTargetBlankToFullyQualifiedLinks(true)
 
+	ps := bluemonday.StrictPolicy()
+
 	/* #nosec */
 	resp, err := http.Get(URL)
 	if err != nil {
@@ -40,11 +42,13 @@ func getPageContent(URL string) (title string, content template.HTML, err error)
 	if err != nil {
 		return "", "", err
 	}
-
 	title = page.Title
 
 	/* #nosec */
 	content = template.HTML(p.Sanitize(page.Body))
+
+	desc := ps.Sanitize(page.Body[0:256])
+	fmt.Println(desc)
 
 	return title, content, nil
 }
