@@ -42,8 +42,14 @@ func (app *application) routes() http.Handler {
 	r.PathPrefix("/static/").Handler(http.FileServer(assets.Assets))
 	r.HandleFunc("/ping", app.ping)
 
+	// Search
+	r.HandleFunc("/", app.search).Queries("q", "{query}")
+
+	// Atom Feed
+	r.HandleFunc("/feed", app.ping).Methods("GET")
+
 	// Home
-	r.HandleFunc("/", app.home)
+	r.HandleFunc("/", app.listBookmark)
 
 	return r
 

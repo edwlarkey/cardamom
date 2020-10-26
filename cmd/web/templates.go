@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"net/url"
 	"path/filepath"
 	"sync"
 	"time"
@@ -33,6 +34,15 @@ func humanDate(t time.Time) string {
 	return t.UTC().Format("02 Jan 2006 at 15:04")
 }
 
+func domainName(s string) string {
+	u, err := url.Parse(s)
+	if err != nil {
+		return s
+	}
+
+	return u.Host
+}
+
 func monthDate(t time.Time) string {
 	if t.IsZero() {
 		return ""
@@ -41,8 +51,9 @@ func monthDate(t time.Time) string {
 }
 
 var functions = template.FuncMap{
-	"humanDate": humanDate,
-	"monthDate": monthDate,
+	"humanDate":  humanDate,
+	"monthDate":  monthDate,
+	"domainName": domainName,
 }
 
 type templates struct {

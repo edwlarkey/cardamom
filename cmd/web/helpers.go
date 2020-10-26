@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/antchfx/goreadly"
 	"github.com/edwlarkey/cardamom/pkg/models"
+	readability "github.com/go-shiori/go-readability"
 	"github.com/gorilla/csrf"
 	"github.com/microcosm-cc/bluemonday"
 )
@@ -25,28 +25,28 @@ func routeUintParam(param string) uint {
 	return uint(value)
 }
 
-func getPageContent(URL string) (title string, content template.HTML, err error) {
+func getPageContent(Url string) (title string, excerpt string, content template.HTML, err error) {
 	p := bluemonday.UGCPolicy()
 	p.AddTargetBlankToFullyQualifiedLinks(true)
 
 	/* #nosec */
-	resp, err := http.Get(URL)
+	resp, err := http.Get(Url)
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 	defer resp.Body.Close()
 
-	page, err := goreadly.ParseResponse(resp)
+	page, err := readability.FromReader(resp.Body, Url)
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 
 	title = page.Title
 
 	/* #nosec */
-	content = template.HTML(p.Sanitize(page.Body))
+	content = template.HTML(p.Sanitize(page.Content))
 
-	return title, content, nil
+	return title, page.Excerpt, content, nil
 }
 
 func (app *application) serverError(w http.ResponseWriter, err error) {
@@ -89,6 +89,25 @@ func (app *application) getOptions(bookmark *models.Bookmark) ([]Option, error) 
 			option = Option{item.Name, false}
 			options = append(options, option)
 		}
+
+	}
+
+	return options, nil
+}
+
+func (app *application) getAllOptions() ([]Option, error) {
+	var options []Option
+
+	t, err := app.db.GetTags()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range t {
+		var option Option
+
+		option = Option{item.Name, false}
+		options = append(options, option)
 
 	}
 

@@ -3,24 +3,23 @@
 {{define "content"}}
 <section id="content">
     {{with .Bookmark}}
-    <div class="card">
-      <header class="card-header">
-        <p class="card-header-title">
-          <a href="{{.URL}}" target="_blank" alt="{{.Title}}">{{.Title}}</a>
-        </p>
-      </header>
-      <div class="card-content">
-        <div class="content">
-          {{.Content}}
-          <br>
-          <time datetime="{{.CreatedAt}}">{{.CreatedAt | humanDate}}</time>
-        </div>
+    <h2 class="title is-2"><a href="{{.URL}}" target="_blank" alt="{{.Title}}">{{.Title}}</a></h2>
+    <p class="subtitle is-4"><time class="has-text-grey" datetime="{{.CreatedAt}}">{{.CreatedAt | humanDate}}</time><p>
+      {{if .Tags}}
+      <div class="tags">
+        {{range .Tags}}
+          <span class="tag is-link is-normal is-light">
+            {{ .Name }}
+          </span>
+        {{end}}
       </div>
-      <footer class="card-footer">
-        <a href="/app/bookmark/{{.ID}}/edit" class="card-footer-item">Edit</a>
-        <a href="#" class="card-footer-item">Delete</a>
-      </footer>
-    </div>
+      {{end}}
+      <div class="content">
+      {{.Content}}
+      </div>
+      <br>
+      <a href="/app/bookmark/{{.ID}}/edit" class="card-footer-item">Edit</a>
+      <a href="#" class="card-footer-item">Delete</a>
     {{end}}
 </section>
 {{end}}
