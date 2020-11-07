@@ -21,6 +21,16 @@
           {{end}}
           <input class="input" type="text" name="url" value="{{.Get "url"}}" autofocus="autofocus">
         </div>
+      <div class="field">
+        <label class="label">Tags</label>
+          <div class="control">
+            <select multiple name="tags" data-type="tags" data-placeholder="Choose Tags">
+              {{range $.Options}}
+              <option {{if .Selected}}selected{{end}}>{{.Value}}</option>
+              {{end}}
+            </select>
+          </div>
+      </div>
         <div class="field">
           <input class="button is-success" type="submit" value="Create">
         </div>

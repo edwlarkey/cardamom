@@ -1,0 +1,89 @@
+{{define "title"}}{{.SiteTitle}} - Home{{end}}
+
+{{define "content"}}
+<div class="level">
+  <div class="level-left">
+    <div class="level-item">
+      <h2 class="title is-2">Bookmarks</h2>
+    </div>
+  </div>
+  <div class="level-right">
+    <div class="level-item">
+      <button id="open-modal" class="button is-link is-small">Create Bookmark</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Create Bookmark</p>
+      <button class="modal-close delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      <form id="bookmark-create" action='/app/bookmark/create' method='POST'>
+          {{ .CSRFField }}
+          {{with .Form}}
+            <div class="field">
+              <label class="label">URL</label>
+              {{with .Errors.Get "url"}}
+                  <div class="has-text-danger">{{.}}</div>
+              {{end}}
+              <input class="input" type="text" name="url" value="{{.Get "url"}}" autofocus="autofocus">
+            </div>
+            <div class="field">
+              <label class="label">Title</label>
+              {{with .Errors.Get "title"}}
+                  <div class="has-text-danger">{{.}}</div>
+              {{end}}
+              <input class="input" type="text" placeholder="Title will be fetched from URL if not set" name="title" value="{{.Get "title"}}">
+            </div>
+            <div class="field">
+              <label class="checkbox">
+                <input type="checkbox"> Read Later
+              </label>
+            </div>
+            <div class="field">
+              <label class="label">Tags</label>
+                <div class="control">
+                  <select multiple name="tags" data-type="tags" data-placeholder="Choose Tags">
+                    {{range $.Options}}
+                    <option {{if .Selected}}selected{{end}}>{{.Value}}</option>
+                    {{end}}
+                  </select>
+                </div>
+            </div>
+            <div class="field">
+              <input class="button is-link" type="submit" value="Create">
+            </div>
+          </form>
+          {{end}}
+    </section>
+  </div>
+</div>
+
+
+  {{if .Bookmarks}}
+    {{range .Bookmarks}}
+    <div class="bookmark">
+      <a href="/app/bookmark/{{.ID}}" alt="{{.Title}}">{{.Title}}</a>&nbsp;|&nbsp;<a class="has-text-grey" href="{{.URL}}" target="_blank" alt="{{.URL}}">{{.URL | domainName}}</a><br>
+        <div class="content">
+          <time class="has-text-grey" datetime="{{.CreatedAt}}">{{.CreatedAt | monthDate}}</time>
+          {{if .Tags}}
+          <div class="tags">
+            {{range .Tags}}
+              <a class="pl-0 pr-2">{{ .Name }} </a>
+            {{end}}
+          </div>
+          {{end}}
+        </div>
+    </div>
+    <br>
+      {{end}}
+  {{else}}
+      <article class="tile is-child notification">
+        <p>There's nothing to see here...yet</p>
+      </article>
+  {{end}}
+{{end}}

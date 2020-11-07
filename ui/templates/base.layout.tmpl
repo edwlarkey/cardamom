@@ -15,14 +15,14 @@
       <div class="navbar-brand">
         <a class="navbar-item" href="/"><strong>Cardamom</strong></a>
 
-        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
         </a>
       </div>
 
-      <div class="navbar-menu">
+      <div class="navbar-menu" id="navMenu">
         <div class="navbar-start">
           <a class="navbar-item" href="/">Home</a>
           {{if .AuthenticatedUser}}
@@ -37,7 +37,7 @@
             <div class="buttons">
               <form class="form-inline" action='/app/user/logout' method='POST'>
                   {{ .CSRFField }}
-                  <input class="button is-primary" type="submit" value="Logout ({{.AuthenticatedUser.Name}}">
+                  <input class="button is-primary" type="submit" value="Logout ({{.AuthenticatedUser.Name}})">
               </form>
             </div>
           {{else}}
@@ -65,7 +65,7 @@
     </section>
     <footer class="footer">
       <div class="content has-text-centered">
-        <p>&copy;{{.CurrentYear}} <strong>Cardamom</strong></p>
+        <p><strong><a href="https://github.com/edwlarkey/cardamom">Cardamom Source</a></strong></p>
       </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/@creativebulma/bulma-tagsinput@1.0.2/dist/js/bulma-tagsinput.min.js"></script>

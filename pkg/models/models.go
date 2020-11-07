@@ -17,6 +17,7 @@ var (
 type Bookmark struct {
 	gorm.Model
 	Title   string
+	Excerpt string
 	Content template.HTML
 	URL     string `gorm:"uniqueIndex"`
 	Read    int    `gorm:"default 0"`
