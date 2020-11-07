@@ -104,9 +104,7 @@ func (app *application) getAllOptions() ([]Option, error) {
 	}
 
 	for _, item := range t {
-		var option Option
-
-		option = Option{item.Name, false}
+		option := Option{item.Name, false}
 		options = append(options, option)
 
 	}
