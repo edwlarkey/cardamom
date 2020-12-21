@@ -65,11 +65,11 @@ func (app *application) PrettyPrint(v interface{}) (err error) {
 	return
 }
 
-func (app *application) getOptions(bookmark *models.Bookmark) ([]Option, error) {
+func (app *application) getOptions(bookmark *models.Bookmark, user *models.User) ([]Option, error) {
 	var options []Option
 	s := make(map[uint]struct{})
 
-	t, err := app.db.GetTags()
+	t, err := app.db.GetTags(user)
 	if err != nil {
 		return nil, err
 	}
@@ -95,10 +95,10 @@ func (app *application) getOptions(bookmark *models.Bookmark) ([]Option, error) 
 	return options, nil
 }
 
-func (app *application) getAllOptions() ([]Option, error) {
+func (app *application) getAllOptions(user *models.User) ([]Option, error) {
 	var options []Option
 
-	t, err := app.db.GetTags()
+	t, err := app.db.GetTags(user)
 	if err != nil {
 		return nil, err
 	}
@@ -124,21 +124,12 @@ func (app *application) addDefaultData(td *templateData, w http.ResponseWriter, 
 	if td == nil {
 		td = &templateData{}
 	}
-	session, err := app.store.Get(r, "cardamom-session")
-	if err != nil {
-		return td
-	}
+
 	td.CSRFField = csrf.TemplateField(r)
 	td.AuthenticatedUser = app.authenticatedUser(r)
 	td.CurrentYear = time.Now().Year()
 	td.SiteTitle = "Cardamom"
-	td.Flash = session.Flashes()
-
-	err = session.Save(r, w)
-	if err != nil {
-		app.serverError(w, err)
-		return nil
-	}
+	td.Flash = app.session.PopString(r, "flash")
 
 	return td
 }
@@ -160,15 +151,7 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, name stri
 }
 
 func (app *application) authenticatedUser(r *http.Request) *models.User {
-	session, err := app.store.Get(r, "cardamom-session")
-	if err != nil {
-		app.errorLog.Println("Could not retrieve session")
-		return nil
-	}
-
-	val := session.Values["user"]
-	var user *models.User
-	user, ok := val.(*models.User)
+	user, ok := r.Context().Value(contextKeyUser).(*models.User)
 	if !ok {
 		return nil
 	}

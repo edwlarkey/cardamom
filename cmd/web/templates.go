@@ -20,7 +20,7 @@ type templateData struct {
 	CurrentYear       int
 	SiteTitle         string
 	Hostname          string
-	Flash             []interface{}
+	Flash             string
 	Form              *forms.Form
 	Bookmark          *models.Bookmark
 	Bookmarks         []*models.Bookmark

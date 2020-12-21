@@ -12,10 +12,12 @@ func (app *application) routes() http.Handler {
 	csrfMiddleware := csrf.Protect([]byte(app.config.Web.CSRF), csrf.Secure(app.config.Web.CSRFSecure))
 
 	r := mux.NewRouter()
+	r.Use(app.session.Enable)
 	r.Use(app.recoverPanic)
 	r.Use(app.logRequest)
 	r.Use(secureHeaders)
 	r.Use(csrfMiddleware)
+	r.Use(app.authenticate)
 	auth := r.PathPrefix("/app").Subrouter()
 	auth.Use(app.requireAuthenticatedUser)
 
@@ -50,7 +52,7 @@ func (app *application) routes() http.Handler {
 	r.HandleFunc("/feed", app.ping).Methods("GET")
 
 	// Home
-	r.HandleFunc("/", app.listBookmark)
+	r.HandleFunc("/", app.home)
 
 	return r
 

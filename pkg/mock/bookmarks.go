@@ -12,9 +12,10 @@ var mockBookmark = &models.Bookmark{
 		ID:        1,
 		CreatedAt: time.Now(),
 	},
-	Title: "Bookmark Title Here",
-	URL:   "https://www.archives.gov/founding-docs/constitution-transcript",
-	Read:  0,
+	UserID: 1,
+	Title:  "Bookmark Title Here",
+	URL:    "https://www.archives.gov/founding-docs/constitution-transcript",
+	Read:   0,
 }
 
 func (m *DB) InsertBookmark(*models.Bookmark) error {
@@ -25,13 +26,16 @@ func (m *DB) UpdateBookmark(*models.Bookmark) error {
 	return nil
 }
 
-func (m *DB) GetBookmarks() ([]*models.Bookmark, error) {
+func (m *DB) GetBookmarks(user *models.User) ([]*models.Bookmark, error) {
 	return []*models.Bookmark{mockBookmark}, nil
 }
 
-func (m *DB) GetBookmark(id uint) (*models.Bookmark, error) {
+func (m *DB) GetBookmark(id uint, user *models.User) (*models.Bookmark, error) {
 	switch id {
 	case 1:
+		if user.ID != mockBookmark.UserID {
+			return nil, models.ErrNoRecord
+		}
 		return mockBookmark, nil
 	default:
 		return nil, models.ErrNoRecord

@@ -28,10 +28,10 @@ func (m *DB) UpdateBookmark(bookmark *models.Bookmark) error {
 }
 
 // GetBookmark gets a single bookmark from the DB
-func (m *DB) GetBookmark(id uint) (*models.Bookmark, error) {
+func (m *DB) GetBookmark(id uint, user *models.User) (*models.Bookmark, error) {
 	bookmark := &models.Bookmark{}
 
-	err := m.DB.Preload("Tags").First(&bookmark, id).Error
+	err := m.DB.Preload("Tags").Scopes(currentUser(user)).First(&bookmark, id).Error
 	if err != nil {
 		return nil, models.ErrNoRecord
 	}
@@ -40,9 +40,9 @@ func (m *DB) GetBookmark(id uint) (*models.Bookmark, error) {
 }
 
 // GetBookmarks gets all bookmarks
-func (m *DB) GetBookmarks() ([]*models.Bookmark, error) {
+func (m *DB) GetBookmarks(user *models.User) ([]*models.Bookmark, error) {
 	v := []models.Bookmark{}
-	m.DB.Preload("Tags").Find(&v)
+	m.DB.Debug().Preload("Tags").Scopes(currentUser(user)).Find(&v)
 
 	bookmarks := []*models.Bookmark{}
 

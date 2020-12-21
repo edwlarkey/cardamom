@@ -10,13 +10,15 @@ import (
 )
 
 func (app *application) listBookmark(w http.ResponseWriter, r *http.Request) {
-	v, err := app.db.GetBookmarks()
+	user := app.authenticatedUser(r)
+
+	v, err := app.db.GetBookmarks(user)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	options, err := app.getAllOptions()
+	options, err := app.getAllOptions(user)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -30,6 +32,7 @@ func (app *application) listBookmark(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) showBookmark(w http.ResponseWriter, r *http.Request) {
+	user := app.authenticatedUser(r)
 	params := mux.Vars(r)
 
 	id := routeUintParam(params["id"])
@@ -38,7 +41,7 @@ func (app *application) showBookmark(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v, err := app.db.GetBookmark(id)
+	v, err := app.db.GetBookmark(id, user)
 	if err == models.ErrNoRecord {
 		app.notFound(w)
 		return
@@ -54,6 +57,7 @@ func (app *application) showBookmark(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) editBookmarkForm(w http.ResponseWriter, r *http.Request) {
+	user := app.authenticatedUser(r)
 	params := mux.Vars(r)
 	id := routeUintParam(params["id"])
 	if id < 1 {
@@ -61,7 +65,7 @@ func (app *application) editBookmarkForm(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	bookmark, err := app.db.GetBookmark(id)
+	bookmark, err := app.db.GetBookmark(id, user)
 	if err == models.ErrNoRecord {
 		app.notFound(w)
 		return
@@ -70,7 +74,7 @@ func (app *application) editBookmarkForm(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	options, err := app.getOptions(bookmark)
+	options, err := app.getOptions(bookmark, user)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -85,12 +89,8 @@ func (app *application) editBookmarkForm(w http.ResponseWriter, r *http.Request)
 }
 
 func (app *application) updateBookmark(w http.ResponseWriter, r *http.Request) {
-	session, err := app.store.Get(r, "cardamom-session")
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-	err = r.ParseForm()
+	user := app.authenticatedUser(r)
+	err := r.ParseForm()
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
@@ -110,7 +110,7 @@ func (app *application) updateBookmark(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bookmark, err := app.db.GetBookmark(id)
+	bookmark, err := app.db.GetBookmark(id, user)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -143,31 +143,19 @@ func (app *application) updateBookmark(w http.ResponseWriter, r *http.Request) {
 		bookmark.Tags = append(bookmark.Tags, tag)
 	}
 
-	app.PrettyPrint(bookmark)
-
 	err = app.db.UpdateBookmark(bookmark)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	session.AddFlash("Update successful!")
-	err = session.Save(r, w)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+	app.session.Put(r, "flash", "Update successful!")
 
 	http.Redirect(w, r, fmt.Sprintf("/app/bookmark/%d", bookmark.ID), http.StatusSeeOther)
 }
 
 func (app *application) createBookmark(w http.ResponseWriter, r *http.Request) {
-	session, err := app.store.Get(r, "cardamom-session")
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
@@ -181,8 +169,11 @@ func (app *application) createBookmark(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user := app.authenticatedUser(r)
+
 	bookmark := models.Bookmark{}
 	bookmark.URL = form.Get("url")
+	bookmark.UserID = user.ID
 
 	title, excerpt, content, err := getPageContent(bookmark.URL)
 	if err != nil {
@@ -207,8 +198,6 @@ func (app *application) createBookmark(w http.ResponseWriter, r *http.Request) {
 		bookmark.Tags = append(bookmark.Tags, tag)
 	}
 
-	app.PrettyPrint(bookmark)
-
 	err = app.db.InsertBookmark(&bookmark)
 
 	if err != nil {
@@ -216,18 +205,14 @@ func (app *application) createBookmark(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.AddFlash("Bookmark added successfully!")
-	err = session.Save(r, w)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+	app.session.Put(r, "flash", "Bookmark added successfully!")
 
 	http.Redirect(w, r, fmt.Sprintf("/app/bookmark/%v", bookmark.ID), http.StatusSeeOther)
 }
 
 func (app *application) createBookmarkForm(w http.ResponseWriter, r *http.Request) {
-	options, err := app.getAllOptions()
+	user := app.authenticatedUser(r)
+	options, err := app.getAllOptions(user)
 	if err != nil {
 		app.serverError(w, err)
 		return

@@ -15,7 +15,7 @@ var mockTag = &models.Tag{
 	Name: "Tag Title Here",
 }
 
-func (m *DB) InsertTag(name string) (uint, error) {
+func (m *DB) InsertTag(tag *models.Tag) (uint, error) {
 	return 2, nil
 }
 
@@ -28,7 +28,7 @@ func (m *DB) GetTag(id uint) (*models.Tag, error) {
 	}
 }
 
-func (m *DB) GetTagByName(name string) (*models.Tag, error) {
+func (m *DB) GetTagByName(name string, user *models.User) (*models.Tag, error) {
 	switch name {
 	case "Tag Title Here":
 		return mockTag, nil
@@ -46,6 +46,6 @@ func (m *DB) CreateIfNotExists(name string) (*models.Tag, error) {
 	}
 }
 
-func (m *DB) GetTags() ([]*models.Tag, error) {
+func (m *DB) GetTags(*models.User) ([]*models.Tag, error) {
 	return []*models.Tag{mockTag}, nil
 }
