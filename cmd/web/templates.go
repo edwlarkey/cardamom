@@ -19,6 +19,7 @@ type templateData struct {
 	CSRFField         template.HTML
 	CurrentYear       int
 	SiteTitle         string
+	Hostname          string
 	Flash             []interface{}
 	Form              *forms.Form
 	Bookmark          *models.Bookmark

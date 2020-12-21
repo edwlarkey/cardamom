@@ -4,5 +4,6 @@ database = "db.sqlite"
 
 [web]
 ip = ""
+hostname = "localhost"
 port = "4000"
 secret = "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge"

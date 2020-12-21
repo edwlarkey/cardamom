@@ -16,6 +16,7 @@ type database struct {
 
 type web struct {
 	IP         string
+	Hostname   string
 	Port       string
 	Secret     string
 	CSRF       string
