@@ -36,6 +36,7 @@ func (app *application) routes() http.Handler {
 	r.HandleFunc("/signup", app.signupUser).Methods("POST")
 	r.HandleFunc("/login", app.loginUserForm).Methods("GET")
 	r.HandleFunc("/login", app.loginUser).Methods("POST")
+	auth.HandleFunc("/user/settings", app.settings).Methods("GET")
 	auth.HandleFunc("/user/logout", app.logoutUser).Methods("POST")
 
 	// Static assets

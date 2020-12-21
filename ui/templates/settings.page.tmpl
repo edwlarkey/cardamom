@@ -1,0 +1,33 @@
+{{define "title"}}{{.SiteTitle}} - Home{{end}}
+
+{{define "content"}}
+<div class="level">
+  <div class="level-left">
+    <div class="level-item">
+      <h2 class="title is-2">Settings</h2>
+    </div>
+  </div>
+  <div class="level-right">
+    <div class="level-item">
+      <button id="open-modal" class="button is-link is-small">Edit</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Create Bookmark</p>
+      <button class="modal-close delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+    </section>
+  </div>
+</div>
+
+Drag this <a href="javascript:location.href='http://{{ .Hostname }}/app/bookmark/create?url='
+                                +encodeURIComponent(location.href)
+                                +'&title='+encodeURIComponent(document.title)">Add To Cardamom</a> bookmarklet to your bookmarks bar to quickly add new bookmarks.
+
+{{end}}

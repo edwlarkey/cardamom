@@ -17,6 +17,12 @@ func (app *application) ping(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (app *application) settings(w http.ResponseWriter, r *http.Request) {
+	app.render(w, r, "settings.page.tmpl", &templateData{
+		Hostname: app.config.Web.Hostname,
+	})
+}
+
 func (app *application) search(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("OK"))
 	if err != nil {
