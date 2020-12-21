@@ -5,8 +5,7 @@ import (
 )
 
 // Insert adds an tag to the DB
-func (m *DB) InsertTag(name string) (uint, error) {
-	tag := &models.Tag{Name: name}
+func (m *DB) InsertTag(tag *models.Tag) (uint, error) {
 
 	m.DB.Create(&tag)
 
@@ -26,10 +25,10 @@ func (m *DB) GetTag(id uint) (*models.Tag, error) {
 }
 
 // Get gets a single tag from the DB by name
-func (m *DB) GetTagByName(name string) (*models.Tag, error) {
+func (m *DB) GetTagByName(name string, user *models.User) (*models.Tag, error) {
 	tag := &models.Tag{}
 
-	err := m.DB.Where("name = ?", name).First(&tag).Error
+	err := m.DB.Where("name = ?", name).Scopes(currentUser(user)).First(&tag).Error
 	if err != nil {
 		return nil, models.ErrNoRecord
 	}
@@ -50,9 +49,9 @@ func (m *DB) CreateIfNotExists(name string) (*models.Tag, error) {
 }
 
 // GetTags gets all tags from the DB
-func (m *DB) GetTags() ([]*models.Tag, error) {
+func (m *DB) GetTags(user *models.User) ([]*models.Tag, error) {
 	t := []models.Tag{}
-	m.DB.Find(&t)
+	m.DB.Scopes(currentUser(user)).Find(&t)
 
 	tags := []*models.Tag{}
 

@@ -14,26 +14,30 @@ import (
 	"github.com/edwlarkey/cardamom/pkg/config"
 	"github.com/edwlarkey/cardamom/pkg/db"
 	"github.com/edwlarkey/cardamom/pkg/models"
-	"github.com/gorilla/sessions"
+	"github.com/golangcollege/sessions"
 )
+
+type contextKey string
+
+var contextKeyUser = contextKey("user")
 
 type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
-	store    *sessions.CookieStore
+	session  *sessions.Session
 	config   config.Config
 	db       interface {
 		Connect(string, string) error
 		Migrate() error
 		LatestBookmarks() ([]*models.Bookmark, error)
-		GetBookmarks() ([]*models.Bookmark, error)
-		GetBookmark(uint) (*models.Bookmark, error)
+		GetBookmarks(*models.User) ([]*models.Bookmark, error)
+		GetBookmark(uint, *models.User) (*models.Bookmark, error)
 		InsertBookmark(*models.Bookmark) error
 		UpdateBookmark(*models.Bookmark) error
-		GetTags() ([]*models.Tag, error)
-		GetTagByName(string) (*models.Tag, error)
+		GetTags(*models.User) ([]*models.Tag, error)
+		GetTagByName(string, *models.User) (*models.Tag, error)
 		CreateIfNotExists(string) (*models.Tag, error)
-		InsertTag(string) (uint, error)
+		InsertTag(*models.Tag) (uint, error)
 		InsertUser(string, string, string) error
 		AuthenticateUser(string, string) (*models.User, error)
 		GetUser(uint) (*models.User, error)
@@ -63,12 +67,10 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.LUTC|log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stdout, "ERROR\t", log.LUTC|log.Ldate|log.Ltime|log.Lshortfile)
 
-	store := sessions.NewCookieStore([]byte(conf.Web.Secret))
-	store.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   86400 * 7,
-		HttpOnly: true,
-	}
+	// Initialize a new session manager, passing in the secret key as the parameter.
+	session := sessions.New([]byte(conf.Web.Secret))
+	session.Lifetime = 12 * time.Hour
+	session.Secure = true
 
 	t, err := initTemplates()
 	if err != nil {
@@ -78,7 +80,7 @@ func main() {
 	app := &application{
 		errorLog:  errorLog,
 		infoLog:   infoLog,
-		store:     store,
+		session:   session,
 		config:    conf,
 		templates: t,
 		db:        &db.DB{},

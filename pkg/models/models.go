@@ -18,15 +18,19 @@ type Bookmark struct {
 	gorm.Model
 	Title   string
 	Excerpt string
+	User    User
+	UserID  uint `gorm:"index:unique_url_user,unique"`
 	Content template.HTML
-	URL     string `gorm:"uniqueIndex"`
+	URL     string `gorm:"index:unique_url_user,unique"`
 	Read    int    `gorm:"default 0"`
 	Tags    []*Tag `gorm:"many2many:bookmark_tags"`
 }
 
 type Tag struct {
 	gorm.Model
-	Name string `gorm:"uniqueIndex"`
+	Name   string `gorm:"index:unique_tag_user,unique"`
+	User   User
+	UserID uint `gorm:"index:unique_tag_user,unique"`
 }
 
 type User struct {

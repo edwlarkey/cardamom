@@ -14,12 +14,7 @@ func (app *application) signupUserForm(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
-	session, err := app.store.Get(r, "cardamom-session")
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
@@ -45,12 +40,7 @@ func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.AddFlash("Your signup was successful. Please log in.")
-	err = session.Save(r, w)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+	app.session.Put(r, "flash", "Your signup was successful. Please log in.")
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
@@ -62,13 +52,7 @@ func (app *application) loginUserForm(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) loginUser(w http.ResponseWriter, r *http.Request) {
-	session, err := app.store.Get(r, "cardamom-session")
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
@@ -86,30 +70,22 @@ func (app *application) loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.Values["user"] = user
-	session.AddFlash("Welcome!")
-
-	err = session.Save(r, w)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+	// Add the ID of the current user to the session, so that they are now 'logged in'.
+	app.session.Put(r, "userID", int(user.ID))
+	app.session.Put(r, "flash", "Welcome!")
 
 	http.Redirect(w, r, "/", 303)
 }
 
 func (app *application) logoutUser(w http.ResponseWriter, r *http.Request) {
-	session, err := app.store.Get(r, "cardamom-session")
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-	session.Values["user"] = nil
-	session.AddFlash("You've been logged out successfully!")
-	err = session.Save(r, w)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+	app.session.Remove(r, "userID")
+	app.session.Put(r, "flash", "You have been logged out.")
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *application) settings(w http.ResponseWriter, r *http.Request) {
+	app.render(w, r, "settings.page.tmpl", &templateData{
+		Hostname: app.config.Web.Hostname,
+	})
 }

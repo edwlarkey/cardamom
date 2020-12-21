@@ -10,10 +10,10 @@ import (
 	"net/url"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/edwlarkey/cardamom/pkg/mock"
-
-	"github.com/gorilla/sessions"
+	"github.com/golangcollege/sessions"
 )
 
 var csrfTokenRX = regexp.MustCompile(`<input type="hidden" name="gorilla.csrf.Token" value="(.+)">`)
@@ -31,12 +31,8 @@ func extractCSRFToken(t *testing.T, body []byte) string {
 
 func newTestApplication(t *testing.T) *application {
 
-	store := sessions.NewCookieStore([]byte("3dSm5MnygFHh7XidAtbskXrjbwfoJcbJ"))
-	store.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   86400 * 7,
-		HttpOnly: true,
-	}
+	session := sessions.New([]byte("3dSm5MnygFHh7XidAtbskXrjbwfoJcbJ"))
+	session.Lifetime = 12 * time.Hour
 
 	tc, err := initTemplates()
 	if err != nil {
@@ -46,7 +42,7 @@ func newTestApplication(t *testing.T) *application {
 	return &application{
 		errorLog:  log.New(ioutil.Discard, "", 0),
 		infoLog:   log.New(ioutil.Discard, "", 0),
-		store:     store,
+		session:   session,
 		db:        &mock.DB{},
 		templates: tc,
 	}
