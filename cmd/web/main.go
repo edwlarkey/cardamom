@@ -1,0 +1,92 @@
+package main
+
+import (
+	"database/sql"
+	"flag"
+	"html/template"
+	"log"
+	"net/http"
+	"os"
+	"time"
+
+	"git.sr.ht/~edwlarkey/cardamom/internal/models"
+	"git.sr.ht/~edwlarkey/cardamom/internal/models/sqlite"
+
+	"github.com/alexedwards/scs/sqlite3store"
+	"github.com/alexedwards/scs/v2"
+	"github.com/go-playground/form/v4"
+	_ "modernc.org/sqlite"
+)
+
+type application struct {
+	errorLog       *log.Logger
+	infoLog        *log.Logger
+	bookmarks      models.BookmarkModelInterface
+	users          models.UserModelInterface
+	templateCache  map[string]*template.Template
+	formDecoder    *form.Decoder
+	sessionManager *scs.SessionManager
+}
+
+func main() {
+	addr := flag.String("addr", ":4000", "HTTP network address")
+	dsn := flag.String("dsn", "cardamom.sqlite?_time_format=sqlite", "data source name")
+
+	flag.Parse()
+
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	db, err := openDB(*dsn)
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+	defer db.Close()
+
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
+	formDecoder := form.NewDecoder()
+
+	sessionManager := scs.New()
+	sessionManager.Store = sqlite3store.New(db)
+	sessionManager.Lifetime = 12 * time.Hour
+
+	sessionManager.Cookie.Secure = true
+
+	app := &application{
+		errorLog:       errorLog,
+		infoLog:        infoLog,
+		bookmarks:      &sqlite.BookmarkModel{DB: db},
+		users:          &sqlite.UserModel{DB: db},
+		templateCache:  templateCache,
+		formDecoder:    formDecoder,
+		sessionManager: sessionManager,
+	}
+
+	srv := &http.Server{
+		Addr:         *addr,
+		ErrorLog:     errorLog,
+		Handler:      app.routes(),
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
+	infoLog.Printf("Starting server on %s", *addr)
+	err = srv.ListenAndServe()
+	errorLog.Fatal(err)
+}
+
+func openDB(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite", dsn)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.Ping(); err != nil {
+		return nil, err
+	}
+	return db, nil
+}
