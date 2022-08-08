@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"git.sr.ht/~edwlarkey/cardamom/internal/models"
+	"git.sr.ht/~edwlarkey/cardamom/internal/models/sqlite"
 
 	"github.com/alexedwards/scs/sqlite3store"
 	"github.com/alexedwards/scs/v2"
@@ -58,8 +59,8 @@ func main() {
 	app := &application{
 		errorLog:       errorLog,
 		infoLog:        infoLog,
-		bookmarks:      &models.BookmarkModel{DB: db},
-		users:          &models.UserModel{DB: db},
+		bookmarks:      &sqlite.BookmarkModel{DB: db},
+		users:          &sqlite.UserModel{DB: db},
 		templateCache:  templateCache,
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,

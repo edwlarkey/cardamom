@@ -1,4 +1,4 @@
-package models
+package sqlite
 
 import (
 	"database/sql"
