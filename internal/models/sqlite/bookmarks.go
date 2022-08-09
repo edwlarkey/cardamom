@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"git.sr.ht/~edwlarkey/cardamom/internal/models"
+	"github.com/jmoiron/sqlx"
 )
 
 type BookmarkModel struct {
-	DB *sql.DB
+	DB *sqlx.DB
 }
 
 func (m *BookmarkModel) Insert(title string, url string, content string, user_id int) (int, error) {

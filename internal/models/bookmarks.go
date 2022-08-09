@@ -16,5 +16,7 @@ type Bookmark struct {
 	Url     string
 	Content string
 	UserId  int
+	ToRead  int
 	Created time.Time
+	Tags    []Tag
 }

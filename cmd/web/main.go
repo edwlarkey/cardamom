@@ -15,6 +15,7 @@ import (
 	"github.com/alexedwards/scs/sqlite3store"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
+	"github.com/jmoiron/sqlx"
 	_ "modernc.org/sqlite"
 )
 
@@ -37,7 +38,7 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	db, err := openDB(*dsn)
+	dbx, db, err := openDB(*dsn)
 	if err != nil {
 		errorLog.Fatal(err)
 	}
@@ -59,8 +60,8 @@ func main() {
 	app := &application{
 		errorLog:       errorLog,
 		infoLog:        infoLog,
-		bookmarks:      &sqlite.BookmarkModel{DB: db},
-		users:          &sqlite.UserModel{DB: db},
+		bookmarks:      &sqlite.BookmarkModel{DB: dbx},
+		users:          &sqlite.UserModel{DB: dbx},
 		templateCache:  templateCache,
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
@@ -80,13 +81,14 @@ func main() {
 	errorLog.Fatal(err)
 }
 
-func openDB(dsn string) (*sql.DB, error) {
+func openDB(dsn string) (*sqlx.DB, *sql.DB, error) {
 	db, err := sql.Open("sqlite", dsn)
+	dbx := sqlx.NewDb(db, "sqlite")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if err = db.Ping(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return db, nil
+	return dbx, db, nil
 }
