@@ -4,12 +4,16 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"html/template"
 	"net/http"
+	nurl "net/url"
 	"runtime/debug"
 	"time"
 
 	"github.com/go-playground/form/v4"
+	readability "github.com/go-shiori/go-readability"
 	"github.com/justinas/nosurf"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 func (app *application) serverError(w http.ResponseWriter, err error) {
@@ -85,4 +89,38 @@ func (app *application) isAuthenticated(r *http.Request) bool {
 	}
 
 	return isAuthenticated
+}
+
+func (app *application) authenticatedUser(r *http.Request) int {
+	user_id := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+	return user_id
+}
+
+func getPageContent(Url string) (title string, excerpt string, content template.HTML, err error) {
+	p := bluemonday.UGCPolicy()
+	p.AddTargetBlankToFullyQualifiedLinks(true)
+
+	/* #nosec */
+	resp, err := http.Get(Url)
+	if err != nil {
+		return "", "", "", err
+	}
+	defer resp.Body.Close()
+
+	u, err := nurl.Parse(Url)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	page, err := readability.FromReader(resp.Body, u)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	title = page.Title
+
+	/* #nosec */
+	content = template.HTML(p.Sanitize(page.Content))
+
+	return title, page.Excerpt, content, nil
 }

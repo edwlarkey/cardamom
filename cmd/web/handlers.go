@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strconv"
 
@@ -13,7 +14,8 @@ import (
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	bookmarks, err := app.bookmarks.Latest(1)
+	user_id := app.authenticatedUser(r)
+	bookmarks, err := app.bookmarks.Latest(user_id)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -34,7 +36,7 @@ func (app *application) bookmarkView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user_id := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+	user_id := app.authenticatedUser(r)
 
 	bookmark, err := app.bookmarks.Get(user_id, id)
 	if err != nil {
@@ -47,6 +49,7 @@ func (app *application) bookmarkView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := app.newTemplateData(r)
+	data.BookmarkContent = template.HTML(bookmark.Content)
 	data.Bookmark = bookmark
 
 	app.render(w, http.StatusOK, "view.tmpl", data)
@@ -86,9 +89,19 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	user_id := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+	user_id := app.authenticatedUser(r)
 
-	id, err := app.bookmarks.Insert(form.Title, form.Url, "TEST", user_id)
+	title, _, content, err := getPageContent(form.Url)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	if len(form.Title) > 0 {
+		title = form.Title
+	}
+
+	id, err := app.bookmarks.Insert(title, form.Url, content, user_id)
 	if err != nil {
 		app.serverError(w, err)
 		return

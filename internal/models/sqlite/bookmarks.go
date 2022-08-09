@@ -3,6 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"errors"
+	"html/template"
 	"time"
 
 	"git.sr.ht/~edwlarkey/cardamom/internal/models"
@@ -13,7 +14,7 @@ type BookmarkModel struct {
 	DB *sqlx.DB
 }
 
-func (m *BookmarkModel) Insert(title string, url string, content string, user_id int) (int, error) {
+func (m *BookmarkModel) Insert(title string, url string, content template.HTML, user_id int) (int, error) {
 	stmt := `INSERT INTO bookmarks (title, url, content, user_id, created) VALUES (
 		?,
 		?,

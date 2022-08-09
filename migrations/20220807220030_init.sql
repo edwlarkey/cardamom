@@ -28,7 +28,7 @@ CREATE TABLE sessions (
 
 CREATE INDEX sessions_expiry_idx ON sessions(expiry);
 
-CREATE UNIQUE INDEX "uni_user_email" ON "bookmarks" (
+CREATE UNIQUE INDEX "uni_user_email" ON "users" (
   "email"
 );
 
