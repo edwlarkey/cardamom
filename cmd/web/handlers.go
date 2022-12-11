@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strconv"
 
@@ -49,7 +48,6 @@ func (app *application) bookmarkView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := app.newTemplateData(r)
-	data.BookmarkContent = template.HTML(bookmark.Content)
 	data.Bookmark = bookmark
 
 	app.render(w, http.StatusOK, "view.tmpl", data)
