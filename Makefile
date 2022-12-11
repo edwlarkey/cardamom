@@ -18,7 +18,7 @@ confirm:
 # DEVELOPMENT
 # ==================================================================================== #
 
-## run/api: run the cmd/api application
+## run/web: run the cmd/web application
 .PHONY: run/web
 run:
 	go run ./cmd/web

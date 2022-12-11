@@ -13,6 +13,7 @@ import (
 type templateData struct {
 	CurrentYear     int
 	Bookmark        *models.Bookmark
+	BookmarkContent template.HTML
 	Bookmarks       []*models.Bookmark
 	Form            any
 	Flash           string

@@ -10,6 +10,7 @@ import (
 	"runtime/debug"
 	"time"
 
+	"git.sr.ht/~edwlarkey/cardamom/internal/models"
 	"github.com/go-playground/form/v4"
 	readability "github.com/go-shiori/go-readability"
 	"github.com/justinas/nosurf"
@@ -37,6 +38,8 @@ func (app *application) newTemplateData(r *http.Request) *templateData {
 		Flash:           app.sessionManager.PopString(r.Context(), "flash"),
 		IsAuthenticated: app.isAuthenticated(r),
 		CSRFToken:       nosurf.Token(r),
+		BookmarkContent: template.HTML(""),
+		Bookmark:        &models.Bookmark{},
 	}
 }
 
