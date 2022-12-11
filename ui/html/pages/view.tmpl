@@ -10,7 +10,9 @@
         <div class='metadata'>
             <strong>{{.Url}}</strong>
         </div>
-        <pre><code>{{.Content}}</code></pre>
+        <div class="article-content">
+          {{.Content}}
+        </div>
         <div class='metadata'>
             <!-- Use the new template function here -->
             <time>Created: {{humanDate .Created}}</time>

@@ -18,10 +18,10 @@ confirm:
 # DEVELOPMENT
 # ==================================================================================== #
 
-## run/web: run the cmd/web application
-.PHONY: run/web
-run:
-	go run ./cmd/web
+## watch: run air to lbuild and live reload when files are changed
+.PHONY: watch
+watch:
+	air
 
 ## db/migrations/new name=$1: create a new database migration
 .PHONY: db/migrations/new
