@@ -46,6 +46,8 @@ CREATE UNIQUE INDEX "uni_user_url" ON "bookmarks" (
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE 'sessions';
+DROP TABLE 'bookmark_tags';
+DROP TABLE 'tags';
 DROP TABLE 'bookmarks';
 DROP TABLE 'users';
 -- +goose StatementEnd
