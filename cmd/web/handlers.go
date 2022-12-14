@@ -53,18 +53,18 @@ func (app *application) bookmarkView(w http.ResponseWriter, r *http.Request) {
 	app.render(w, http.StatusOK, "view.tmpl", data)
 }
 
+type bookmarkCreateForm struct {
+	Title               string `form:"title"`
+	Url                 string `form:"url"`
+	validator.Validator `form:"-"`
+}
+
 func (app *application) bookmarkCreate(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 
 	data.Form = bookmarkCreateForm{}
 
 	app.render(w, http.StatusOK, "create.tmpl", data)
-}
-
-type bookmarkCreateForm struct {
-	Title               string `form:"title"`
-	Url                 string `form:"url"`
-	validator.Validator `form:"-"`
 }
 
 func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Request) {
@@ -108,6 +108,52 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 	app.sessionManager.Put(r.Context(), "flash", "Bookmark successfully created!")
 
 	http.Redirect(w, r, fmt.Sprintf("/bookmark/view/%d", id), http.StatusSeeOther)
+}
+
+type tagCreateForm struct {
+	Name                string `form:"name"`
+	validator.Validator `form:"-"`
+}
+
+func (app *application) tagCreate(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+
+	data.Form = tagCreateForm{}
+
+	app.render(w, http.StatusOK, "create_tag.tmpl", data)
+}
+
+func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {
+	var form tagCreateForm
+
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	form.CheckField(validator.NotBlank(form.Name), "title", "This field cannot be blank")
+	form.CheckField(validator.MaxChars(form.Name, 100), "title", "This field cannot be more than 100 characters long")
+
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+
+		app.render(w, http.StatusUnprocessableEntity, "create_tag.tmpl", data)
+		return
+	}
+
+	user_id := app.authenticatedUser(r)
+
+	_, err = app.tags.Insert(form.Name, user_id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Tag successfully created!")
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 type userSignupForm struct {

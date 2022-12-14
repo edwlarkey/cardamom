@@ -23,18 +23,25 @@ func (app *application) routes() http.Handler {
 
 	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
 
+	// Public routes
 	router.Handler(http.MethodGet, "/user/signup", dynamic.ThenFunc(app.userSignup))
 	router.Handler(http.MethodPost, "/user/signup", dynamic.ThenFunc(app.userSignupPost))
 	router.Handler(http.MethodGet, "/user/login", dynamic.ThenFunc(app.userLogin))
 	router.Handler(http.MethodPost, "/user/login", dynamic.ThenFunc(app.userLoginPost))
 
+	// Routes protected via auth
 	protected := dynamic.Append(app.requireAuthentication)
 
 	router.Handler(http.MethodGet, "/", protected.ThenFunc(app.home))
 	router.Handler(http.MethodGet, "/bookmark/view/:id", protected.ThenFunc(app.bookmarkView))
 	router.Handler(http.MethodGet, "/bookmark/create", protected.ThenFunc(app.bookmarkCreate))
 	router.Handler(http.MethodPost, "/bookmark/create", protected.ThenFunc(app.bookmarkCreatePost))
+
 	router.Handler(http.MethodPost, "/user/logout", protected.ThenFunc(app.userLogoutPost))
+
+	// router.Handler(http.MethodGet, "/tag/view/:id", protected.ThenFunc(app.tagView))
+	router.Handler(http.MethodGet, "/tag/create", protected.ThenFunc(app.tagCreate))
+	router.Handler(http.MethodPost, "/tag/create", protected.ThenFunc(app.tagCreatePost))
 
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 	return standard.Then(router)

@@ -24,6 +24,7 @@ type application struct {
 	infoLog        *log.Logger
 	bookmarks      models.BookmarkModelInterface
 	users          models.UserModelInterface
+	tags           models.TagModelInterface
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
@@ -62,6 +63,7 @@ func main() {
 		infoLog:        infoLog,
 		bookmarks:      &sqlite.BookmarkModel{DB: dbx},
 		users:          &sqlite.UserModel{DB: dbx},
+		tags:           &sqlite.TagModel{DB: dbx},
 		templateCache:  templateCache,
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
