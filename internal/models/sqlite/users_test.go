@@ -37,7 +37,7 @@ func TestUserModelExists(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			db := newTestDB(t)
 
-			m := UserModel{db}
+			m := UserModel{DB: db}
 
 			exists, err := m.Exists(tt.userID)
 

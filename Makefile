@@ -43,7 +43,7 @@ db/migrations/up: confirm
 .PHONY: test
 test:
 	@echo 'Running tests...'
-	go test -race ./...
+	go test -race -v ./...
 
 ## audit: tidy and vendor dependencies and format, vet and test all code
 .PHONY: audit
@@ -57,7 +57,7 @@ audit:
 	go vet ./...
 	staticcheck ./...
 	@echo 'Running tests...'
-	go test -race -vet=off ./...
+	go test -race -v -vet=off ./...
 
 ## vendor: tidy and vendor dependencies
 .PHONY: vendor
@@ -77,4 +77,3 @@ vendor:
 build:
 	@echo 'Building cmd/web...'
 	go build -ldflags="-s" -o=./bin/$(app_name) ./cmd/web
-

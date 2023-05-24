@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"testing"
@@ -25,6 +26,20 @@ func TestBookmarkView(t *testing.T) {
 
 	ts := newTestServer(t, app.routes())
 	defer ts.Close()
+
+	_, _, body := ts.get(t, "/user/signup")
+	validCSRFToken := extractCSRFToken(t, body)
+
+	form := url.Values{}
+	form.Add("email", "alice@example.com")
+	form.Add("password", "pa$$word")
+	form.Add("csrf_token", validCSRFToken)
+
+	code, _, _ := ts.postForm(t, "/user/login", form)
+	if code != 303 {
+		fmt.Println(code)
+		t.Fatal()
+	}
 
 	tests := []struct {
 		name     string
@@ -57,6 +72,64 @@ func TestBookmarkView(t *testing.T) {
 			name:     "String ID",
 			urlPath:  "/bookmark/view/foo",
 			wantCode: http.StatusNotFound,
+		},
+		{
+			name:     "Empty ID",
+			urlPath:  "/bookmark/view/",
+			wantCode: http.StatusNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			code, _, body := ts.get(t, tt.urlPath)
+
+			assert.Equal(t, code, tt.wantCode)
+
+			if tt.wantBody != "" {
+				assert.StringContains(t, body, tt.wantBody)
+			}
+		})
+	}
+}
+
+func TestAnonBookmarkView(t *testing.T) {
+	app := newTestApplication(t)
+
+	ts := newTestServer(t, app.routes())
+	defer ts.Close()
+
+	tests := []struct {
+		name     string
+		urlPath  string
+		wantCode int
+		wantBody string
+	}{
+		{
+			name:     "Valid ID",
+			urlPath:  "/bookmark/view/1",
+			wantCode: http.StatusSeeOther,
+			wantBody: "<a href=\"/user/login\">See Other</a>",
+		},
+		{
+			name:     "Non-existent ID",
+			urlPath:  "/bookmark/view/2",
+			wantCode: http.StatusSeeOther,
+		},
+		{
+			name:     "Negative ID",
+			urlPath:  "/bookmark/view/-1",
+			wantCode: http.StatusSeeOther,
+		},
+		{
+			name:     "Decimal ID",
+			urlPath:  "/bookmark/view/1.23",
+			wantCode: http.StatusSeeOther,
+		},
+		{
+			name:     "String ID",
+			urlPath:  "/bookmark/view/foo",
+			wantCode: http.StatusSeeOther,
 		},
 		{
 			name:     "Empty ID",

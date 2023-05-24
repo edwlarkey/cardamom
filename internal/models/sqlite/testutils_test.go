@@ -6,10 +6,11 @@ import (
 	"testing"
 
 	"github.com/jmoiron/sqlx"
+	_ "modernc.org/sqlite"
 )
 
 func newTestDB(t *testing.T) *sqlx.DB {
-	db, err := sql.Open("sqlite", "test.sqlite")
+	db, err := sql.Open("sqlite", "test.sqlite?_time_format=sqlite")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,7 +36,7 @@ func newTestDB(t *testing.T) *sqlx.DB {
 		}
 
 		db.Close()
-		// os.Remove("test.sqlite")
+		os.Remove("test.sqlite")
 	})
 
 	return dbx
