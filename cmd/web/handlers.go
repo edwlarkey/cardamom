@@ -55,6 +55,7 @@ func (app *application) bookmarkView(w http.ResponseWriter, r *http.Request) {
 
 type bookmarkCreateForm struct {
 	Title               string `form:"title"`
+	Name                string `form:"name"`
 	Url                 string `form:"url"`
 	validator.Validator `form:"-"`
 }
@@ -65,6 +66,21 @@ func (app *application) bookmarkCreate(w http.ResponseWriter, r *http.Request) {
 	data.Form = bookmarkCreateForm{}
 
 	app.render(w, http.StatusOK, "create.tmpl", data)
+}
+
+func (app *application) bookmarkCreateForm(w http.ResponseWriter, r *http.Request) {
+	user_id := app.authenticatedUser(r)
+	data := app.newTemplateData(r)
+
+	data.Form = bookmarkCreateForm{}
+	tags, err := app.tags.All(user_id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	data.Tags = tags
+
+	app.renderPartial(w, http.StatusOK, "create_bookmark.tmpl", data)
 }
 
 func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Request) {
@@ -120,13 +136,35 @@ func (app *application) tagCreate(w http.ResponseWriter, r *http.Request) {
 
 	data.Form = tagCreateForm{}
 
-	app.render(w, http.StatusOK, "create_tag.tmpl", data)
+	app.renderPartial(w, http.StatusOK, "create_tag.tmpl", data)
+}
+
+func (app *application) tagGetHtmx(w http.ResponseWriter, r *http.Request) {
+	user_id := app.authenticatedUser(r)
+	data := app.newTemplateData(r)
+	tags, err := app.tags.All(user_id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	data.Tags = tags
+
+	app.renderPartial(w, http.StatusOK, "tag_options.tmpl", data)
 }
 
 func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {
-	var form tagCreateForm
+	var form bookmarkCreateForm
 
-	err := app.decodePostForm(r, &form)
+	user_id := app.authenticatedUser(r)
+	data := app.newTemplateData(r)
+	tags, err := app.tags.All(user_id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	data.Tags = tags
+
+	err = app.decodePostForm(r, &form)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
@@ -139,11 +177,9 @@ func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {
 		data := app.newTemplateData(r)
 		data.Form = form
 
-		app.render(w, http.StatusUnprocessableEntity, "create_tag.tmpl", data)
+		app.renderPartial(w, http.StatusUnprocessableEntity, "create_bookmark.tmpl", data)
 		return
 	}
-
-	user_id := app.authenticatedUser(r)
 
 	_, err = app.tags.Insert(form.Name, user_id)
 	if err != nil {
@@ -153,7 +189,7 @@ func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {
 
 	app.sessionManager.Put(r.Context(), "flash", "Tag successfully created!")
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	app.renderPartial(w, http.StatusOK, "create_bookmark.tmpl", data)
 }
 
 type userSignupForm struct {

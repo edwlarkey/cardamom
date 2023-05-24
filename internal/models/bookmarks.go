@@ -6,9 +6,9 @@ import (
 )
 
 type BookmarkModelInterface interface {
-	Insert(title string, url string, content template.HTML, user_id int) (int, error)
-	Get(user_id int, id int) (*Bookmark, error)
-	Latest(user_id int) ([]*Bookmark, error)
+	Insert(title string, url string, content template.HTML, userId int) (int, error)
+	Get(userId int, id int) (*Bookmark, error)
+	Latest(userId int) ([]*Bookmark, error)
 }
 
 type Bookmark struct {

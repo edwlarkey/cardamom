@@ -1,22 +1,75 @@
-CREATE TABLE snippets (
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(100) NOT NULL,
-    content TEXT NOT NULL,
-    created DATETIME NOT NULL,
-    expires DATETIME NOT NULL
+CREATE TABLE IF NOT EXISTS users (
+  id  INTEGER NOT NULL,
+  name  TEXT NOT NULL,
+  email TEXT NOT NULL,
+  hashed_password TEXT NOT NULL,
+  created DATETIME NOT NULL,
+  PRIMARY KEY(id AUTOINCREMENT)
 );
 
-CREATE INDEX idx_snippets_created ON snippets(created);
-
-CREATE TABLE users (
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    hashed_password CHAR(60) NOT NULL,
-    created DATETIME NOT NULL
+CREATE UNIQUE INDEX "uni_user_email" ON "users" (
+  "email"
 );
 
-ALTER TABLE users ADD CONSTRAINT users_uc_email UNIQUE (email);
+CREATE TABLE IF NOT EXISTS bookmarks (
+  id  INTEGER NOT NULL,
+  title  TEXT NOT NULL,
+  url TEXT NOT NULL,
+  content TEXT,
+  user_id INTEGER NOT NULL,
+  created DATETIME NOT NULL,
+  PRIMARY KEY(id AUTOINCREMENT)
+  FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+CREATE UNIQUE INDEX "uni_user_title" ON "bookmarks" (
+  "title",
+  "user_id"
+);
+
+CREATE UNIQUE INDEX "uni_user_url" ON "bookmarks" (
+  "url",
+  "user_id"
+);
+
+CREATE TABLE IF NOT EXISTS tags (
+  id  INTEGER NOT NULL,
+  name  TEXT NOT NULL,
+  user_id INTEGER NOT NULL,
+  created DATETIME NOT NULL,
+  PRIMARY KEY(id AUTOINCREMENT)
+  FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+CREATE UNIQUE INDEX "uni_user_tag" ON "tags" (
+  "name",
+  "user_id"
+);
+
+CREATE TABLE IF NOT EXISTS bookmark_tags (
+  id  INTEGER NOT NULL,
+  bookmark_id INTEGER NOT NULL,
+  tag_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  PRIMARY KEY(id AUTOINCREMENT)
+  FOREIGN KEY(bookmark_id) REFERENCES bookmarks(id)
+  FOREIGN KEY(tag_id) REFERENCES tags(id)
+  FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+CREATE UNIQUE INDEX "uni_bookmark_tag" ON "bookmark_tags" (
+  "bookmark_id",
+  "tag_id",
+  "user_id"
+);
+
+CREATE TABLE sessions (
+  token TEXT PRIMARY KEY,
+  data BLOB NOT NULL,
+  expiry REAL NOT NULL
+);
+
+CREATE INDEX sessions_expiry_idx ON sessions(expiry);
 
 INSERT INTO users (name, email, hashed_password, created) VALUES (
     'Alice Jones',

@@ -63,6 +63,27 @@ func (app *application) render(w http.ResponseWriter, status int, page string, d
 	buf.WriteTo(w)
 }
 
+func (app *application) renderPartial(w http.ResponseWriter, status int, partial string, data *templateData) {
+	ts, ok := app.templateCache[partial]
+	if !ok {
+		err := fmt.Errorf("the partial %s does not exist", partial)
+		app.serverError(w, err)
+		return
+	}
+
+	buf := new(bytes.Buffer)
+
+	err := ts.ExecuteTemplate(buf, partial, data)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	w.WriteHeader(status)
+
+	buf.WriteTo(w)
+}
+
 func (app *application) decodePostForm(r *http.Request, dst any) error {
 	err := r.ParseForm()
 	if err != nil {

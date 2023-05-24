@@ -4,13 +4,16 @@ import (
 	"database/sql"
 	"os"
 	"testing"
+
+	"github.com/jmoiron/sqlx"
 )
 
-func newTestDB(t *testing.T) *sql.DB {
-	db, err := sql.Open("mysql", "test_web:pass@/test_snippetbox?parseTime=true&multiStatements=true")
+func newTestDB(t *testing.T) *sqlx.DB {
+	db, err := sql.Open("sqlite", "test.sqlite")
 	if err != nil {
 		t.Fatal(err)
 	}
+	dbx := sqlx.NewDb(db, "sqlite")
 
 	script, err := os.ReadFile("./testdata/setup.sql")
 	if err != nil {
@@ -32,7 +35,8 @@ func newTestDB(t *testing.T) *sql.DB {
 		}
 
 		db.Close()
+		// os.Remove("test.sqlite")
 	})
 
-	return db
+	return dbx
 }

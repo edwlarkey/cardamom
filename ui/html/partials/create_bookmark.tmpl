@@ -1,0 +1,48 @@
+<div id="create-form">
+  <form action='/bookmark/create' method='POST'>
+      <!-- Include the CSRF token -->
+      <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
+      <div>
+          <label>Title:</label>
+          {{with .Form.FieldErrors.title}}
+              <label class='error'>{{.}}</label>
+          {{end}}
+          <input type='text' name='title' value='{{.Form.Title}}'>
+      </div>
+      <div>
+          <label>URL:</label>
+          {{with .Form.FieldErrors.url}}
+              <label class='error'>{{.}}</label>
+          {{end}}
+          <input type='text' name='url' value='{{.Form.Url}}'>
+      </div>
+
+      <div>
+      <select id="tags" name="tags" hx-get="/htmx/tags" hx-trigger="load">
+        {{range .Tags}}
+          <option value='{{.ID}}'>{{.Name}}</option>
+        {{end}}
+      </select>
+      </div>
+
+      <div>
+          <input type="submit" value="Add Bookmark">
+      </div>
+  </form>
+
+  Add Tag
+  <form hx-post="/tag/create" hx-target="#create-form">
+      <!-- Include the CSRF token -->
+      <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
+      <div>
+          <label>Name:</label>
+          {{with .Form.FieldErrors.name}}
+              <label class='error'>{{.}}</label>
+          {{end}}
+          <input type='text' name='name' value='{{.Form.Name}}'>
+      </div>
+      <div>
+          <input type='submit' value='Add Tag'>
+      </div>
+  </form>
+</div>

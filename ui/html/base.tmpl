@@ -4,13 +4,35 @@
     <head>
         <meta charset='utf-8'>
         <title>{{template "title" .}} - Snippetbox</title>
-        <link rel='stylesheet' href='/static/css/missing.min.css'>
+        <!-- <link rel="stylesheet" href="https://the.missing.style/v1.0.5/missing.min.css"> -->
         <link rel='stylesheet' href='/static/css/main.css'>
         <link rel='shortcut icon' href='/static/img/favicon.ico' type='image/x-icon'>
         <script src="https://unpkg.com/htmx.org@1.8.4" integrity="sha384-wg5Y/JwF7VxGk4zLsJEcAojRtlVp1FKKdGy1qN+OMtdq72WRvX/EdRdqg/LOhYeV" crossorigin="anonymous"></script>
     </head>
     <body>
-        {{template "nav" .}}
+        <header class="navbar" data-overflow-nav="">
+          <nav class="contents">
+            <p class="float:left">
+              <a href="/" class="allcaps">Cardamom</a> 
+            </p>
+            <ul role="list">
+              <li><a href='/'>Home</a></li>
+              {{if .IsAuthenticated}}
+                <li><a href='/bookmark/create'>Create bookmark</a></li>
+              {{end}}
+              {{if .IsAuthenticated}}
+                <li><form action='/user/logout' method='POST'>
+                      <!-- Include the CSRF token -->
+                      <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
+                      <button>Logout</button>
+                  </form></li>
+              {{else}}
+                <li><a href='/user/signup'>Signup</a></li>
+                <li><a href='/user/login'>Login</a></li>
+              {{end}}
+            </ul>
+          </nav>
+        </header>
         <main>
             <!-- Display the flash message if one exists -->
             {{with .Flash}}

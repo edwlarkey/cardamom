@@ -53,7 +53,7 @@ func (m *TagModel) Get(user_id int, id int) (*models.Tag, error) {
 	return s, nil
 }
 
-func (m *TagModel) GetAll(user_id int) ([]*models.Tag, error) {
+func (m *TagModel) All(user_id int) ([]*models.Tag, error) {
 	stmt := `SELECT id, name, created FROM tags
     WHERE user_id = ? ORDER BY id DESC LIMIT 10`
 

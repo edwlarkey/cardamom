@@ -1,7 +1,4 @@
-{{define "title"}}Create a New Bookmark{{end}}
-
-{{define "main"}}
-<form action='/tag/create' method='POST'>
+<form hx-post='/tag/create'>
     <!-- Include the CSRF token -->
     <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
     <div>
@@ -15,5 +12,3 @@
         <input type='submit' value='Add Tag'>
     </div>
 </form>
-{{end}}
-

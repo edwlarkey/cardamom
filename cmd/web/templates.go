@@ -15,6 +15,7 @@ type templateData struct {
 	Bookmark        *models.Bookmark
 	BookmarkContent template.HTML
 	Bookmarks       []*models.Bookmark
+	Tags            []*models.Tag
 	Form            any
 	Flash           string
 	IsAuthenticated bool
@@ -41,13 +42,32 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		return nil, err
 	}
 
+	partials, err := fs.Glob(ui.Files, "html/partials/*.tmpl")
+	if err != nil {
+		return nil, err
+	}
+
 	for _, page := range pages {
 		name := filepath.Base(page)
 
 		patterns := []string{
 			"html/base.tmpl",
-			"html/partials/*.tmpl",
 			page,
+		}
+
+		ts, err := template.New(name).Funcs(functions).ParseFS(ui.Files, patterns...)
+		if err != nil {
+			return nil, err
+		}
+
+		cache[name] = ts
+	}
+
+	for _, part := range partials {
+		name := filepath.Base(part)
+
+		patterns := []string{
+			part,
 		}
 
 		ts, err := template.New(name).Funcs(functions).ParseFS(ui.Files, patterns...)

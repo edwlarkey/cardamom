@@ -38,10 +38,19 @@ db/migrations/up: confirm
 # ==================================================================================== #
 # QUALITY CONTROL
 # ==================================================================================== #
+#
+## audit: tidy and vendor dependencies and format, vet and test all code
+.PHONY: test
+test:
+	@echo 'Running tests...'
+	go test -race ./...
 
 ## audit: tidy and vendor dependencies and format, vet and test all code
 .PHONY: audit
-audit: vendor
+audit:
+	@echo 'Tidying and verifying module dependencies...'
+	go mod tidy
+	go mod verify
 	@echo 'Formatting code...'
 	go fmt ./...
 	@echo 'Vetting code...'

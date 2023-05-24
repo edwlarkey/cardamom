@@ -20,7 +20,7 @@ func TestPing(t *testing.T) {
 	assert.Equal(t, body, "OK")
 }
 
-func TestSnippetView(t *testing.T) {
+func TestBookmarkView(t *testing.T) {
 	app := newTestApplication(t)
 
 	ts := newTestServer(t, app.routes())
@@ -34,33 +34,33 @@ func TestSnippetView(t *testing.T) {
 	}{
 		{
 			name:     "Valid ID",
-			urlPath:  "/snippet/view/1",
+			urlPath:  "/bookmark/view/1",
 			wantCode: http.StatusOK,
 			wantBody: "An old silent pond...",
 		},
 		{
 			name:     "Non-existent ID",
-			urlPath:  "/snippet/view/2",
+			urlPath:  "/bookmark/view/2",
 			wantCode: http.StatusNotFound,
 		},
 		{
 			name:     "Negative ID",
-			urlPath:  "/snippet/view/-1",
+			urlPath:  "/bookmark/view/-1",
 			wantCode: http.StatusNotFound,
 		},
 		{
 			name:     "Decimal ID",
-			urlPath:  "/snippet/view/1.23",
+			urlPath:  "/bookmark/view/1.23",
 			wantCode: http.StatusNotFound,
 		},
 		{
 			name:     "String ID",
-			urlPath:  "/snippet/view/foo",
+			urlPath:  "/bookmark/view/foo",
 			wantCode: http.StatusNotFound,
 		},
 		{
 			name:     "Empty ID",
-			urlPath:  "/snippet/view/",
+			urlPath:  "/bookmark/view/",
 			wantCode: http.StatusNotFound,
 		},
 	}

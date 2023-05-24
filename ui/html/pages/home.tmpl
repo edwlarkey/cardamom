@@ -3,20 +3,23 @@
 {{define "main"}}
     <h2>Latest Bookmarks</h2>
     {{if .Bookmarks}}
-     <table>
-        <tr>
-            <th>Title</th>
-            <th>Created</th>
-            <th>ID</th>
-        </tr>
+    <div class="bookmark-list">
         {{range .Bookmarks}}
-        <tr>
-            <td><a href='/bookmark/view/{{.ID}}'>{{.Title}}</a></td>
-            <td>{{humanDate .Created}}</td>
-            <td>#{{.ID}}</td>
-        </tr>
+          <div class="bookmark">
+            <a class="bookmark-link" href="/bookmark/view/{{.ID}}">
+              <div class="title">{{.Title}}</div>
+              <div class="summary">summary here</div>
+            </a>
+
+            <time datetime="{{.Created}}">{{humanDate .Created}}</time>
+
+            <span class="bookmark-tags">
+                <a class="bookmark-tag tag-inactive" href="./tags.html">#promnesia</a>
+                <a class="bookmark-tag tag-active" href="./tags.html#pkm">#pkm</a>
+            </span>
+          </div>
         {{end}}
-    </table>
+    </div>
     {{else}}
         <p>There's nothing to see here... yet!</p>
     {{end}}
