@@ -92,9 +92,6 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	form.CheckField(validator.NotBlank(form.Title), "title", "This field cannot be blank")
-	form.CheckField(validator.MaxChars(form.Title, 100), "title", "This field cannot be more than 100 characters long")
-
 	if !form.Valid() {
 		data := app.newTemplateData(r)
 		data.Form = form
@@ -103,7 +100,7 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	user_id := app.authenticatedUser(r)
+	userId := app.authenticatedUser(r)
 
 	title, _, content, err := getPageContent(form.Url)
 	if err != nil {
@@ -115,7 +112,7 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 		title = form.Title
 	}
 
-	id, err := app.bookmarks.Insert(title, form.Url, content, user_id)
+	id, err := app.bookmarks.Insert(title, form.Url, content, userId)
 	if err != nil {
 		app.serverError(w, err)
 		return
