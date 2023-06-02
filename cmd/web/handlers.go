@@ -13,8 +13,8 @@ import (
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	user_id := app.authenticatedUser(r)
-	bookmarks, err := app.bookmarks.Latest(user_id)
+	userId := app.authenticatedUser(r)
+	bookmarks, err := app.bookmarks.Latest(userId)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -35,9 +35,9 @@ func (app *application) bookmarkView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user_id := app.authenticatedUser(r)
+	userId := app.authenticatedUser(r)
 
-	bookmark, err := app.bookmarks.Get(user_id, id)
+	bookmark, err := app.bookmarks.Get(userId, id)
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
 			app.notFound(w)
@@ -46,6 +46,13 @@ func (app *application) bookmarkView(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	tags, err := app.tags.GetTagsForBookmark(6, userId)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	bookmark.Tags = tags
 
 	data := app.newTemplateData(r)
 	data.Bookmark = bookmark
@@ -67,8 +74,8 @@ func (app *application) bookmarkCreate(w http.ResponseWriter, r *http.Request) {
 	data.Form = bookmarkCreateForm{}
 
 	if r.Header.Get("HX-Request") == "true" {
-		user_id := app.authenticatedUser(r)
-		tags, err := app.tags.All(user_id)
+		userId := app.authenticatedUser(r)
+		tags, err := app.tags.All(userId)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -138,9 +145,9 @@ func (app *application) tagCreate(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) tagList(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("HX-Request") == "true" {
-		user_id := app.authenticatedUser(r)
+		userId := app.authenticatedUser(r)
 		data := app.newTemplateData(r)
-		tags, err := app.tags.All(user_id)
+		tags, err := app.tags.All(userId)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -157,9 +164,9 @@ func (app *application) tagList(w http.ResponseWriter, r *http.Request) {
 func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {
 	var form bookmarkCreateForm
 
-	user_id := app.authenticatedUser(r)
+	userId := app.authenticatedUser(r)
 	data := app.newTemplateData(r)
-	tags, err := app.tags.All(user_id)
+	tags, err := app.tags.All(userId)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -183,7 +190,7 @@ func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = app.tags.Insert(form.Name, user_id)
+	_, err = app.tags.Insert(form.Name, userId)
 	if err != nil {
 		app.serverError(w, err)
 		return

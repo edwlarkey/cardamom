@@ -6,6 +6,10 @@
         <div class='metadata'>
             <strong>{{.Title}}</strong>
             <span>#{{.ID}}</span>
+            <br>
+			{{range .Tags}}
+            <a class="bookmark-tag tag-active" href="./tags.html#pkm">#{{.Name}}</a>&nbsp;
+			{{end}}
         </div>
         <div class='metadata'>
             <a href="{{.Url}}" target="_blank">{{.Url}}</a>

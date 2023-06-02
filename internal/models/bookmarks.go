@@ -19,5 +19,5 @@ type Bookmark struct {
 	UserId  int
 	ToRead  int
 	Created time.Time
-	Tags    []Tag
+	Tags    []*Tag
 }

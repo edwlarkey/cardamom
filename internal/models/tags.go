@@ -3,9 +3,10 @@ package models
 import "time"
 
 type TagModelInterface interface {
-	Insert(name string, user_id int) (int, error)
-	Get(user_id int, id int) (*Tag, error)
-	All(user_id int) ([]*Tag, error)
+	Insert(name string, userId int) (int, error)
+	Get(id int, userId int) (*Tag, error)
+	GetTagsForBookmark(bookmarkId int, userId int) ([]*Tag, error)
+	All(userId int) ([]*Tag, error)
 }
 
 type Tag struct {

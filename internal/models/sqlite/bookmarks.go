@@ -89,14 +89,14 @@ func (m *BookmarkModel) Latest(userId int) ([]*models.Bookmark, error) {
 	bookmarks := []*models.Bookmark{}
 
 	for rows.Next() {
-		s := &models.Bookmark{}
+		b := &models.Bookmark{}
 
-		err := rows.Scan(&s.ID, &s.Title, &s.Url, &s.Content, &s.Created)
+		err := rows.Scan(&b.ID, &b.Title, &b.Url, &b.Content, &b.Created)
 		if err != nil {
 			return nil, err
 		}
 
-		bookmarks = append(bookmarks, s)
+		bookmarks = append(bookmarks, b)
 	}
 
 	if err = rows.Err(); err != nil {
