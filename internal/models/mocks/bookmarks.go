@@ -18,7 +18,7 @@ var mockBookmark = &models.Bookmark{
 
 type BookmarkModel struct{}
 
-func (m *BookmarkModel) Insert(title string, url string, content template.HTML, userId int) (int, error) {
+func (m *BookmarkModel) Insert(title string, url string, content template.HTML, userId int, tags []int) (int, error) {
 	return 2, nil
 }
 

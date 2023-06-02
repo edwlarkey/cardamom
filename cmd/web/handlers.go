@@ -57,6 +57,7 @@ type bookmarkCreateForm struct {
 	Title               string `form:"title"`
 	Name                string `form:"name"`
 	Url                 string `form:"url"`
+	Tags                []int  `form:"tags"`
 	validator.Validator `form:"-"`
 }
 
@@ -111,7 +112,7 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 		title = form.Title
 	}
 
-	id, err := app.bookmarks.Insert(title, form.Url, content, userId)
+	id, err := app.bookmarks.Insert(title, form.Url, content, userId, form.Tags)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -135,17 +136,22 @@ func (app *application) tagCreate(w http.ResponseWriter, r *http.Request) {
 	app.renderPartial(w, http.StatusOK, "create_tag.tmpl", data)
 }
 
-func (app *application) tagGetHtmx(w http.ResponseWriter, r *http.Request) {
-	user_id := app.authenticatedUser(r)
-	data := app.newTemplateData(r)
-	tags, err := app.tags.All(user_id)
-	if err != nil {
-		app.serverError(w, err)
+func (app *application) tagList(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("HX-Request") == "true" {
+		user_id := app.authenticatedUser(r)
+		data := app.newTemplateData(r)
+		tags, err := app.tags.All(user_id)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		data.Tags = tags
+
+		app.renderPartial(w, http.StatusOK, "tag_options.tmpl", data)
+	} else {
+		app.clientError(w, http.StatusBadRequest)
 		return
 	}
-	data.Tags = tags
-
-	app.renderPartial(w, http.StatusOK, "tag_options.tmpl", data)
 }
 
 func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {

@@ -6,7 +6,7 @@ import (
 )
 
 type BookmarkModelInterface interface {
-	Insert(title string, url string, content template.HTML, userId int) (int, error)
+	Insert(title string, url string, content template.HTML, userId int, tags []int) (int, error)
 	Get(userId int, id int) (*Bookmark, error)
 	Latest(userId int) ([]*Bookmark, error)
 }

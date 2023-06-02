@@ -40,6 +40,7 @@ func (app *application) routes() http.Handler {
 	router.Handler(http.MethodPost, "/user/logout", protected.ThenFunc(app.userLogoutPost))
 
 	// router.Handler(http.MethodGet, "/tag/view/:id", protected.ThenFunc(app.tagView))
+	router.Handler(http.MethodGet, "/tag/list", protected.ThenFunc(app.tagList))
 	router.Handler(http.MethodPost, "/tag/create", protected.ThenFunc(app.tagCreatePost))
 
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)

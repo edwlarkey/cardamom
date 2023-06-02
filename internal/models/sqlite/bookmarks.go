@@ -1,6 +1,7 @@
 package sqlite
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"html/template"
@@ -14,7 +15,11 @@ type BookmarkModel struct {
 	DB *sqlx.DB
 }
 
-func (m *BookmarkModel) Insert(title string, url string, content template.HTML, user_id int) (int, error) {
+func (m *BookmarkModel) Insert(title string, url string, content template.HTML, userId int, tags []int) (int, error) {
+	tx, err := m.DB.BeginTx(context.TODO(), &sql.TxOptions{})
+	if err != nil {
+		return 0, err
+	}
 	stmt := `INSERT INTO bookmarks (title, url, content, user_id, created) VALUES (
 		?,
 		?,
@@ -23,7 +28,7 @@ func (m *BookmarkModel) Insert(title string, url string, content template.HTML, 
 		?
 	);`
 
-	result, err := m.DB.Exec(stmt, title, url, content, user_id, time.Now())
+	result, err := tx.Exec(stmt, title, url, content, userId, time.Now())
 	if err != nil {
 		return 0, err
 	}
@@ -33,14 +38,29 @@ func (m *BookmarkModel) Insert(title string, url string, content template.HTML, 
 		return 0, err
 	}
 
+	tagStmt := `INSERT INTO bookmark_tags (bookmark_id, tag_id, user_id) VALUES (
+		?,
+		?,
+		?
+	);`
+
+	for _, tagId := range tags {
+		_, err := tx.Exec(tagStmt, id, tagId, userId)
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	tx.Commit()
+
 	return int(id), nil
 }
 
-func (m *BookmarkModel) Get(user_id int, id int) (*models.Bookmark, error) {
+func (m *BookmarkModel) Get(userId int, id int) (*models.Bookmark, error) {
 	stmt := `SELECT id, title, url, content, created FROM bookmarks
     WHERE user_id = ? AND id = ?`
 
-	row := m.DB.QueryRow(stmt, user_id, id)
+	row := m.DB.QueryRow(stmt, userId, id)
 
 	s := &models.Bookmark{}
 
@@ -56,11 +76,11 @@ func (m *BookmarkModel) Get(user_id int, id int) (*models.Bookmark, error) {
 	return s, nil
 }
 
-func (m *BookmarkModel) Latest(user_id int) ([]*models.Bookmark, error) {
+func (m *BookmarkModel) Latest(userId int) ([]*models.Bookmark, error) {
 	stmt := `SELECT id, title, url, content, created FROM bookmarks
     WHERE user_id = ? ORDER BY id DESC LIMIT 10`
 
-	rows, err := m.DB.Query(stmt, user_id)
+	rows, err := m.DB.Query(stmt, userId)
 	if err != nil {
 		return nil, err
 	}
