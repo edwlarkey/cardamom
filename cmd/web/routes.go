@@ -42,8 +42,6 @@ func (app *application) routes() http.Handler {
 	// router.Handler(http.MethodGet, "/tag/view/:id", protected.ThenFunc(app.tagView))
 	router.Handler(http.MethodPost, "/tag/create", protected.ThenFunc(app.tagCreatePost))
 
-	router.Handler(http.MethodGet, "/htmx/bookmark/create", protected.ThenFunc(app.bookmarkCreateForm))
-
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 	return standard.Then(router)
 }

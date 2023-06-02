@@ -65,22 +65,19 @@ func (app *application) bookmarkCreate(w http.ResponseWriter, r *http.Request) {
 
 	data.Form = bookmarkCreateForm{}
 
-	app.render(w, http.StatusOK, "create.tmpl", data)
-}
+	if r.Header.Get("HX-Request") == "true" {
+		user_id := app.authenticatedUser(r)
+		tags, err := app.tags.All(user_id)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		data.Tags = tags
 
-func (app *application) bookmarkCreateForm(w http.ResponseWriter, r *http.Request) {
-	user_id := app.authenticatedUser(r)
-	data := app.newTemplateData(r)
-
-	data.Form = bookmarkCreateForm{}
-	tags, err := app.tags.All(user_id)
-	if err != nil {
-		app.serverError(w, err)
-		return
+		app.renderPartial(w, http.StatusOK, "create_bookmark.tmpl", data)
+	} else {
+		app.render(w, http.StatusOK, "create.tmpl", data)
 	}
-	data.Tags = tags
-
-	app.renderPartial(w, http.StatusOK, "create_bookmark.tmpl", data)
 }
 
 func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Request) {
