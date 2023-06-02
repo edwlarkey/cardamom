@@ -47,6 +47,11 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		return nil, err
 	}
 
+	htmx, err := fs.Glob(ui.Files, "html/htmx/*.tmpl")
+	if err != nil {
+		return nil, err
+	}
+
 	for _, page := range pages {
 		name := filepath.Base(page)
 
@@ -68,6 +73,21 @@ func newTemplateCache() (map[string]*template.Template, error) {
 
 		patterns := []string{
 			part,
+		}
+
+		ts, err := template.New(name).Funcs(functions).ParseFS(ui.Files, patterns...)
+		if err != nil {
+			return nil, err
+		}
+
+		cache[name] = ts
+	}
+
+	for _, h := range htmx {
+		name := filepath.Base(h)
+
+		patterns := []string{
+			h,
 		}
 
 		ts, err := template.New(name).Funcs(functions).ParseFS(ui.Files, patterns...)

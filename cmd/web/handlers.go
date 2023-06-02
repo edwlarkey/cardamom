@@ -92,11 +92,13 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// form.CheckField(validator.NotBlank(form.Url), "url", "This field cannot be blank")
+
 	if !form.Valid() {
 		data := app.newTemplateData(r)
 		data.Form = form
 
-		app.render(w, http.StatusUnprocessableEntity, "create.tmpl", data)
+		app.render(w, http.StatusUnprocessableEntity, "create_bookmark.tmpl", data)
 		return
 	}
 
