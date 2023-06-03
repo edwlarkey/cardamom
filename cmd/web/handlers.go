@@ -47,7 +47,7 @@ func (app *application) bookmarkView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tags, err := app.tags.GetTagsForBookmark(6, userId)
+	tags, err := app.tags.GetTagsForBookmark(id, userId)
 	if err != nil {
 		app.serverError(w, err)
 		return

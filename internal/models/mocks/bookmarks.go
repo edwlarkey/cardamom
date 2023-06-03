@@ -14,6 +14,7 @@ var mockBookmark = &models.Bookmark{
 	Url:     "An old silent pond",
 	Content: "An old silent pond...",
 	Created: time.Now(),
+	// Tags:    []*models.Tag{},
 }
 
 type BookmarkModel struct{}
