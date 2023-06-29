@@ -1,6 +1,45 @@
 {{define "title"}}Create a New Bookmark{{end}}
 
 {{define "main"}}
-<div hx-get="/bookmark/create" hx-trigger="load">
+<div class="box margin grid grid-even-rows">
+	<div class="box" data-cols="1 4">
+  <form action="/bookmark/create" method="POST" >
+      <!-- Include the CSRF token -->
+      <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+      <div>
+          <label>Title:</label>
+          <input type="text" name="title" value="{{.Form.Title}}">
+      </div>
+      <div>
+          <label>URL:</label>
+          <input type="text" name="url" value="{{.Form.Url}}" required>
+      </div>
+
+      <div >
+      <label>Tags:</label>
+      <select id="create-tag-options" name="tags" hx-get="/tag/list" hx-trigger="load" multiple="multiple">
+      </select>
+      </div>
+
+      <div>
+          <input type="submit" value="Add Bookmark">
+      </div>
+  </form>
+  </div>
+
+  <div class="box" data-cols="5 6">
+	  Add Tag
+	  <form hx-post="/tag/create" hx-target="#create-tag-options">
+		  <!-- Include the CSRF token -->
+		  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+		  <div>
+			  <label>Name:</label>
+			  <input type="text" name="name">
+		  </div>
+		  <div>
+			  <input type="submit" value="Add Tag">
+		  </div>
+	  </form>
+  </div>
 </div>
 {{end}}

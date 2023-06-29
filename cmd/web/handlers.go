@@ -73,19 +73,7 @@ func (app *application) bookmarkCreate(w http.ResponseWriter, r *http.Request) {
 
 	data.Form = bookmarkCreateForm{}
 
-	if r.Header.Get("HX-Request") == "true" {
-		userId := app.authenticatedUser(r)
-		tags, err := app.tags.All(userId)
-		if err != nil {
-			app.serverError(w, err)
-			return
-		}
-		data.Tags = tags
-
-		app.renderPartial(w, http.StatusOK, "create_bookmark.tmpl", data)
-	} else {
-		app.render(w, http.StatusOK, "create.tmpl", data)
-	}
+	app.render(w, http.StatusOK, "create.tmpl", data)
 }
 
 func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Request) {
@@ -131,8 +119,7 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 }
 
 type tagCreateForm struct {
-	Name                string `form:"name"`
-	validator.Validator `form:"-"`
+	Name string `form:"name"`
 }
 
 func (app *application) tagCreate(w http.ResponseWriter, r *http.Request) {
@@ -165,28 +152,9 @@ func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {
 	var form bookmarkCreateForm
 
 	userId := app.authenticatedUser(r)
-	data := app.newTemplateData(r)
-	tags, err := app.tags.All(userId)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-	data.Tags = tags
-
-	err = app.decodePostForm(r, &form)
+	err := app.decodePostForm(r, &form)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
-		return
-	}
-
-	form.CheckField(validator.NotBlank(form.Name), "title", "This field cannot be blank")
-	form.CheckField(validator.MaxChars(form.Name, 100), "title", "This field cannot be more than 100 characters long")
-
-	if !form.Valid() {
-		data := app.newTemplateData(r)
-		data.Form = form
-
-		app.renderPartial(w, http.StatusUnprocessableEntity, "create_bookmark.tmpl", data)
 		return
 	}
 
@@ -196,9 +164,15 @@ func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.sessionManager.Put(r.Context(), "flash", "Tag successfully created!")
+	data := app.newTemplateData(r)
+	tags, err := app.tags.All(userId)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	data.Tags = tags
 
-	app.renderPartial(w, http.StatusOK, "create_bookmark.tmpl", data)
+	app.renderPartial(w, http.StatusOK, "tag_options.tmpl", data)
 }
 
 type userSignupForm struct {
