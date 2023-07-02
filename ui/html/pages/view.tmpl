@@ -2,38 +2,38 @@
 
 {{define "main"}}
     {{with .Bookmark}}
-        <div class="bookmark-list">
-          <div class="bookmark">
-            <div class="bookmark-link">
-              <div class="title">{{.Title}}</div>
-            </div>
+    <div class="bookmark-list">
+	  <div class="bookmark">
+		<div class="bookmark-link">
+		  <div class="title">{{.Title}}</div>
+		</div>
 
-            <time datetime="{{.Created}}">{{humanDate .Created}}</time>
+		<time datetime="{{.Created}}">{{humanDate .Created}}</time>
 
-            <div class="summary">{{.Url}}</div>
+		<div class="summary">{{.Url}}</div>
 
-            <div class="bookmark-footer">
-			{{if .Read}}
-			<a href="">mark unread</a>
-			{{else}}
-			<a href="">mark read</a>
+		<div class="bookmark-footer">
+		{{if .Read}}
+		<a href="">mark unread</a>
+		{{else}}
+		<a href="">mark read</a>
+		{{end}}
+		<br>
+		</div>
+
+		<span class="bookmark-tags">
+			{{range .Tags}}
+			<span class="bookmark-tag">#{{.Name}}</span>&nbsp;
 			{{end}}
-			<br>
-			</div>
-
-            <span class="bookmark-tags">
-				{{range .Tags}}
-				<span class="bookmark-tag">#{{.Name}}</span>&nbsp;
-				{{end}}
-            </span>
-          </div>
+		</span>
 	  </div>
-        <div class="article-content">
-          {{.Content}}
-        </div>
-        <div class='metadata'>
-            <!-- Use the new template function here -->
-            <time>Created: {{humanDate .Created}}</time>
-        </div>
+	</div>
+	<div class="article-content">
+	  {{.Content}}
+	</div>
+	<div class='metadata'>
+		<!-- Use the new template function here -->
+		<time>Created: {{humanDate .Created}}</time>
+	</div>
     {{end}}
 {{end}}

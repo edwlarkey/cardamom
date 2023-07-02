@@ -31,18 +31,18 @@
   </div>
 
   <div class="box">
-	  Add Tag
-	  <form class="table rows" hx-post="/tag/create" hx-target="#create-tag-options">
-		  <!-- Include the CSRF token -->
-		  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-		  <div>
-        <label>Name:</label>
-        <input type="text" name="name">
-		  </div>
-		  <div>
-			  <input type="submit" value="Add Tag">
-		  </div>
-	  </form>
+    Add Tag
+    <form class="table rows" hx-post="/tag/create" hx-target="#create-tag-options">
+      <!-- Include the CSRF token -->
+      <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+      <div>
+    <label>Name:</label>
+    <input type="text" name="name">
+      </div>
+      <div>
+        <input type="submit" value="Add Tag">
+      </div>
+    </form>
   </div>
 </div>
 {{end}}
