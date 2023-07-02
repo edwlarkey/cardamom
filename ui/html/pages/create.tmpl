@@ -2,8 +2,8 @@
 
 {{define "main"}}
 <div class="box margin grid grid-even-rows">
-	<div class="box">
-  <form action="/bookmark/create" class="table rows" method="POST" >
+  <div class="box">
+    <form action="/bookmark/create" class="table rows" method="POST" >
       <!-- Include the CSRF token -->
       <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
       <div>
@@ -27,7 +27,7 @@
       <div>
           <input type="submit" value="Add Bookmark">
       </div>
-  </form>
+    </form>
   </div>
 
   <div class="box">

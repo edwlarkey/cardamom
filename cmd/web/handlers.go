@@ -133,14 +133,6 @@ type tagCreateForm struct {
 	validator.Validator `form:"-"`
 }
 
-func (app *application) tagCreate(w http.ResponseWriter, r *http.Request) {
-	data := app.newTemplateData(r)
-
-	data.Form = tagCreateForm{}
-
-	app.renderPartial(w, http.StatusOK, "create_tag.tmpl", data)
-}
-
 func (app *application) tagList(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("HX-Request") == "true" {
 		userId := app.authenticatedUser(r)
@@ -152,7 +144,7 @@ func (app *application) tagList(w http.ResponseWriter, r *http.Request) {
 		}
 		data.Tags = tags
 
-		app.renderPartial(w, http.StatusOK, "tag_options.tmpl", data)
+		app.renderPartial(w, http.StatusOK, "tag-options", data)
 	} else {
 		app.clientError(w, http.StatusBadRequest)
 		return
@@ -183,7 +175,7 @@ func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Tags = tags
 
-	app.renderPartial(w, http.StatusOK, "tag_options.tmpl", data)
+	app.renderPartial(w, http.StatusOK, "tag-options", data)
 }
 
 type userSignupForm struct {

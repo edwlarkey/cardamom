@@ -64,7 +64,7 @@ func (app *application) render(w http.ResponseWriter, status int, page string, d
 }
 
 func (app *application) renderPartial(w http.ResponseWriter, status int, partial string, data *templateData) {
-	ts, ok := app.templateCache[partial]
+	ts, ok := app.templateCache["partials"]
 	if !ok {
 		err := fmt.Errorf("the partial %s does not exist", partial)
 		app.serverError(w, err)
