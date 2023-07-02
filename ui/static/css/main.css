@@ -1,8 +1,3 @@
-nav form {
-  display: inline-block;
-  margin-left: 1.5em;
-}
-
 .bookmark-list {
 }
 
@@ -37,22 +32,33 @@ nav form {
   color: #555;
 }
 
+.bookmark-list .bookmark .summary {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  grid-row-start: span 2;
+}
+
+.bookmark-list .bookmark .bookmark-footer {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: span 2;
+}
+
 .bookmark-list .bookmark time {
   grid-column-start: 2;
   grid-column-end: 3;
 
-  grid-row-start: span 2; /* TODO not sure about this one */
+  grid-row-start: span 2;
 
   text-align: right;
 
-  white-space: nowrap; /* prevent breakin date up */
+  white-space: nowrap;
   font-size: 0.8em;
   color: #555;
 }
 
 .bookmark-list .bookmark .bookmark-tags {
-  /* ok, that's def nice; that way it ened up taking less vertical space on phone */
-  grid-column-start: 1;
+  grid-column-start: 2;
   grid-column-end: 3;
 
   justify-self: stretch;
@@ -60,7 +66,7 @@ nav form {
   text-align: right;
 }
 
-.bookmark-list .pos .bookmark-tags {
+.bookmark-list .pos .bookmark-tags .metadata {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -69,4 +75,8 @@ nav form {
 
 .bookmark-tag {
   color: var(--red-11, var(--accent));
+}
+
+.title {
+  font-size: 1.17em;
 }

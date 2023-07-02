@@ -7,10 +7,6 @@
       <!-- Include the CSRF token -->
       <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
       <div>
-          <label>Title:</label>
-          <input type="text" name="title" value="{{.Form.Title}}">
-      </div>
-      <div>
           <label>URL:</label>
           <input type="text" name="url" value="{{.Form.Url}}">
           {{with .Form.FieldErrors.url}}
@@ -18,6 +14,10 @@
           {{end}}
       </div>
 
+      <div>
+          <label>Title:</label>
+          <input type="text" name="title" value="{{.Form.Title}}">
+      </div>
       <div >
       <label>Tags:</label>
       <ul id="create-tag-options" hx-get="/tag/list" hx-trigger="load">

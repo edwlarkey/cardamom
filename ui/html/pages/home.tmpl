@@ -8,14 +8,25 @@
           <div class="bookmark">
             <a class="bookmark-link" href="/bookmark/view/{{.ID}}">
               <div class="title">{{.Title}}</div>
-              <div class="summary">summary here</div>
             </a>
 
             <time datetime="{{.Created}}">{{humanDate .Created}}</time>
 
+            <div class="summary">{{.Url}}</div>
+
+            <div class="bookmark-footer">
+			{{if .Read}}
+			<a href="">mark unread</a>
+			{{else}}
+			<a href="">mark read</a>
+			{{end}}
+			<br>
+			</div>
+
             <span class="bookmark-tags">
-                <a class="bookmark-tag tag-inactive" href="./tags.html">#promnesia</a>
-                <a class="bookmark-tag tag-active" href="./tags.html#pkm">#pkm</a>
+				{{range .Tags}}
+				<span class="bookmark-tag">#{{.Name}}</span>&nbsp;
+				{{end}}
             </span>
           </div>
         {{end}}

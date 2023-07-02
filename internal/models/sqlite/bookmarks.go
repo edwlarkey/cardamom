@@ -20,7 +20,8 @@ func (m *BookmarkModel) Insert(title string, url string, content template.HTML, 
 	if err != nil {
 		return 0, err
 	}
-	stmt := `INSERT INTO bookmarks (title, url, content, user_id, created) VALUES (
+	stmt := `INSERT INTO bookmarks (title, url, content, read, user_id, created) VALUES (
+		?,
 		?,
 		?,
 		?,
@@ -28,7 +29,7 @@ func (m *BookmarkModel) Insert(title string, url string, content template.HTML, 
 		?
 	);`
 
-	result, err := tx.Exec(stmt, title, url, content, userId, time.Now())
+	result, err := tx.Exec(stmt, title, url, content, 1, userId, time.Now())
 	if err != nil {
 		return 0, err
 	}

@@ -27,7 +27,7 @@ func humanDate(t time.Time) string {
 		return ""
 	}
 
-	return t.UTC().Format("02 Jan 2006 at 15:04")
+	return t.UTC().Format("2006-01-02")
 }
 
 var functions = template.FuncMap{
@@ -43,11 +43,6 @@ func newTemplateCache() (map[string]*template.Template, error) {
 	}
 
 	partials, err := fs.Glob(ui.Files, "html/partials/*.tmpl")
-	if err != nil {
-		return nil, err
-	}
-
-	htmx, err := fs.Glob(ui.Files, "html/htmx/*.tmpl")
 	if err != nil {
 		return nil, err
 	}
@@ -73,21 +68,6 @@ func newTemplateCache() (map[string]*template.Template, error) {
 
 		patterns := []string{
 			part,
-		}
-
-		ts, err := template.New(name).Funcs(functions).ParseFS(ui.Files, patterns...)
-		if err != nil {
-			return nil, err
-		}
-
-		cache[name] = ts
-	}
-
-	for _, h := range htmx {
-		name := filepath.Base(h)
-
-		patterns := []string{
-			h,
 		}
 
 		ts, err := template.New(name).Funcs(functions).ParseFS(ui.Files, patterns...)
