@@ -20,6 +20,15 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	for _, bookmark := range bookmarks {
+		tags, err := app.tags.GetTagsForBookmark(bookmark.ID, userId)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		bookmark.Tags = tags
+	}
+
 	data := app.newTemplateData(r)
 	data.Bookmarks = bookmarks
 
@@ -81,17 +90,20 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 
 	err := app.decodePostForm(r, &form)
 	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
+		// app.clientError(w, http.StatusBadRequest)
+		app.serverError(w, err)
 		return
 	}
 
-	// form.CheckField(validator.NotBlank(form.Url), "url", "This field cannot be blank")
+	fmt.Println(form.Tags)
+
+	form.CheckField(validator.NotBlank(form.Url), "url", "URL cannot be blank")
 
 	if !form.Valid() {
 		data := app.newTemplateData(r)
 		data.Form = form
 
-		app.render(w, http.StatusUnprocessableEntity, "create_bookmark.tmpl", data)
+		app.render(w, http.StatusUnprocessableEntity, "create.tmpl", data)
 		return
 	}
 
@@ -119,7 +131,8 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 }
 
 type tagCreateForm struct {
-	Name string `form:"name"`
+	Name                string `form:"name"`
+	validator.Validator `form:"-"`
 }
 
 func (app *application) tagCreate(w http.ResponseWriter, r *http.Request) {

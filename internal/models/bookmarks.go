@@ -17,7 +17,7 @@ type Bookmark struct {
 	Url     string
 	Content template.HTML
 	UserId  int
-	ToRead  int
+	Read    int
 	Created time.Time
 	Tags    []*Tag
 }

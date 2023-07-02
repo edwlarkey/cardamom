@@ -1,3 +1,3 @@
 {{range .Tags}}
-  <option value='{{.ID}}'>{{.Name}}</option>
+  <li><label for="tag{{.ID}}"><input id="tag{{.ID}}" name="tags" type="checkbox" value="{{.ID}}"> {{.Name}}</label></li>
 {{end}}
