@@ -23,6 +23,12 @@ confirm:
 watch:
 	air
 
+## install/tools: installs development tools
+.PHONY: install/tools
+install/tools:
+	@echo 'Installing migrate tool'
+	go install -tags 'sqlite' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
 ## db/migrations/new name=$1: create a new database migration
 .PHONY: db/migrations/new
 db/migrations/new:
@@ -33,7 +39,7 @@ db/migrations/new:
 .PHONY: db/migrations/up
 db/migrations/up: confirm
 	@echo 'Running up migrations...'
-	migrate -path ./migrations -database $(app_name).sqlite up
+	migrate -path ./migrations -database sqlite://$(app_name).sqlite up
 
 # ==================================================================================== #
 # QUALITY CONTROL

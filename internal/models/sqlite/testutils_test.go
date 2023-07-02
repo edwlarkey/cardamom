@@ -5,6 +5,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/sqlite"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"github.com/jmoiron/sqlx"
 	_ "modernc.org/sqlite"
 )
@@ -16,6 +19,23 @@ func newTestDB(t *testing.T) *sqlx.DB {
 	}
 	dbx := sqlx.NewDb(db, "sqlite")
 
+	migrations, err := iofs.New(migrationFS, "migrations")
+	if err != nil {
+		t.Fatal(err)
+	}
+	driver, err := sqlite.WithInstance(db, &sqlite.Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	m, err := migrate.NewWithInstance("iofs", migrations, "test", driver)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = m.Up()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	script, err := os.ReadFile("./testdata/setup.sql")
 	if err != nil {
 		t.Fatal(err)
@@ -26,11 +46,7 @@ func newTestDB(t *testing.T) *sqlx.DB {
 	}
 
 	t.Cleanup(func() {
-		script, err := os.ReadFile("./testdata/teardown.sql")
-		if err != nil {
-			t.Fatal(err)
-		}
-		_, err = db.Exec(string(script))
+		err = m.Down()
 		if err != nil {
 			t.Fatal(err)
 		}

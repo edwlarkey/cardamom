@@ -1,5 +1,3 @@
--- +goose Up
--- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS users (
   id  INTEGER NOT NULL,
   name  TEXT NOT NULL,
@@ -73,13 +71,3 @@ CREATE TABLE sessions (
 );
 
 CREATE INDEX sessions_expiry_idx ON sessions(expiry);
--- +goose StatementEnd
-
--- +goose Down
--- +goose StatementBegin
-DROP TABLE 'sessions';
-DROP TABLE 'bookmark_tags';
-DROP TABLE 'tags';
-DROP TABLE 'bookmarks';
-DROP TABLE 'users';
--- +goose StatementEnd

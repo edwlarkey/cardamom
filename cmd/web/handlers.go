@@ -95,8 +95,6 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	fmt.Println(form.Tags)
-
 	form.CheckField(validator.NotBlank(form.Url), "url", "URL cannot be blank")
 
 	if !form.Valid() {

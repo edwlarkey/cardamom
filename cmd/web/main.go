@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
 	"html/template"
 	"log"
@@ -15,7 +14,6 @@ import (
 	"github.com/alexedwards/scs/sqlite3store"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
-	"github.com/jmoiron/sqlx"
 	_ "modernc.org/sqlite"
 )
 
@@ -39,11 +37,11 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	dbx, db, err := openDB(*dsn)
+	dbx, err := sqlite.OpenDB(*dsn)
 	if err != nil {
 		errorLog.Fatal(err)
 	}
-	defer db.Close()
+	defer dbx.Close()
 
 	templateCache, err := newTemplateCache()
 	if err != nil {
@@ -53,7 +51,7 @@ func main() {
 	formDecoder := form.NewDecoder()
 
 	sessionManager := scs.New()
-	sessionManager.Store = sqlite3store.New(db)
+	sessionManager.Store = sqlite3store.New(dbx.DB)
 	sessionManager.Lifetime = 12 * time.Hour
 
 	sessionManager.Cookie.Secure = true
@@ -81,16 +79,4 @@ func main() {
 	infoLog.Printf("Starting server on %s", *addr)
 	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
-}
-
-func openDB(dsn string) (*sqlx.DB, *sql.DB, error) {
-	db, err := sql.Open("sqlite", dsn)
-	dbx := sqlx.NewDb(db, "sqlite")
-	if err != nil {
-		return nil, nil, err
-	}
-	if err = db.Ping(); err != nil {
-		return nil, nil, err
-	}
-	return dbx, db, nil
 }
