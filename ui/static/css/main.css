@@ -80,3 +80,8 @@
 .title {
   font-size: 1.17em;
 }
+
+.read-indicator {
+  font-size: 0.75em;
+  color: var(--grey-5, var(--accent));
+}

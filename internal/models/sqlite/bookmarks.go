@@ -29,7 +29,7 @@ func (m *BookmarkModel) Insert(title string, url string, content template.HTML, 
 		?
 	);`
 
-	result, err := tx.Exec(stmt, title, url, content, 1, userId, time.Now())
+	result, err := tx.Exec(stmt, title, url, content, 0, userId, time.Now())
 	if err != nil {
 		return 0, err
 	}
@@ -58,14 +58,14 @@ func (m *BookmarkModel) Insert(title string, url string, content template.HTML, 
 }
 
 func (m *BookmarkModel) Get(userId int, id int) (*models.Bookmark, error) {
-	stmt := `SELECT id, title, url, content, created FROM bookmarks
+	stmt := `SELECT id, title, url, content, created, read FROM bookmarks
     WHERE user_id = ? AND id = ?`
 
 	row := m.DB.QueryRow(stmt, userId, id)
 
 	s := &models.Bookmark{}
 
-	err := row.Scan(&s.ID, &s.Title, &s.Url, &s.Content, &s.Created)
+	err := row.Scan(&s.ID, &s.Title, &s.Url, &s.Content, &s.Created, &s.Read)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord
@@ -78,7 +78,7 @@ func (m *BookmarkModel) Get(userId int, id int) (*models.Bookmark, error) {
 }
 
 func (m *BookmarkModel) Latest(userId int) ([]*models.Bookmark, error) {
-	stmt := `SELECT id, title, url, content, created FROM bookmarks
+	stmt := `SELECT id, title, url, content, created, read FROM bookmarks
     WHERE user_id = ? ORDER BY id DESC LIMIT 10`
 
 	rows, err := m.DB.Query(stmt, userId)
@@ -92,7 +92,7 @@ func (m *BookmarkModel) Latest(userId int) ([]*models.Bookmark, error) {
 	for rows.Next() {
 		b := &models.Bookmark{}
 
-		err := rows.Scan(&b.ID, &b.Title, &b.Url, &b.Content, &b.Created)
+		err := rows.Scan(&b.ID, &b.Title, &b.Url, &b.Content, &b.Created, &b.Read)
 		if err != nil {
 			return nil, err
 		}
@@ -105,4 +105,38 @@ func (m *BookmarkModel) Latest(userId int) ([]*models.Bookmark, error) {
 	}
 
 	return bookmarks, nil
+}
+
+func (m *BookmarkModel) MarkRead(userId int, id int) error {
+	tx, err := m.DB.BeginTx(context.TODO(), &sql.TxOptions{})
+	if err != nil {
+		return err
+	}
+	stmt := `UPDATE bookmarks SET read = 1 WHERE id = ? and user_id = ?;`
+
+	_, err = tx.Exec(stmt, id, userId)
+	if err != nil {
+		return err
+	}
+
+	tx.Commit()
+
+	return nil
+}
+
+func (m *BookmarkModel) MarkUnread(userId int, id int) error {
+	tx, err := m.DB.BeginTx(context.TODO(), &sql.TxOptions{})
+	if err != nil {
+		return err
+	}
+	stmt := `UPDATE bookmarks SET read = 0 WHERE id = ? and user_id = ?;`
+
+	_, err = tx.Exec(stmt, id, userId)
+	if err != nil {
+		return err
+	}
+
+	tx.Commit()
+
+	return nil
 }

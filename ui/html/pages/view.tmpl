@@ -1,16 +1,5 @@
 {{define "title"}}Bookmark #{{.Bookmark.ID}}{{end}}
 
 {{define "main"}}
-    {{with .Bookmark}}
-    <div class="bookmark-list">
-          {{ template "bookmark-item" . }}
-    </div>
-    <div class="article-content">
-      {{.Content}}
-    </div>
-    <div class='metadata'>
-      <!-- Use the new template function here -->
-      <time>Created: {{humanDate .Created}}</time>
-    </div>
-    {{end}}
+    {{ template "bookmark-item" . }}
 {{end}}

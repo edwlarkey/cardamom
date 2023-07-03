@@ -128,6 +128,100 @@ func (app *application) bookmarkCreatePost(w http.ResponseWriter, r *http.Reques
 	http.Redirect(w, r, fmt.Sprintf("/bookmark/view/%d", id), http.StatusSeeOther)
 }
 
+type bookmarkMarkForm struct {
+	ID string `form:"id"`
+}
+
+func (app *application) bookmarkMarkRead(w http.ResponseWriter, r *http.Request) {
+	var form bookmarkMarkForm
+
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+	id, err := strconv.Atoi(form.ID)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	userId := app.authenticatedUser(r)
+
+	err = app.bookmarks.MarkRead(userId, id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	bookmark, err := app.bookmarks.Get(userId, id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	tags, err := app.tags.GetTagsForBookmark(id, userId)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	bookmark.Tags = tags
+
+	data := app.newTemplateData(r)
+	data.Bookmark = bookmark
+
+	app.renderPartial(w, http.StatusOK, "bookmark-item", data)
+}
+
+func (app *application) bookmarkMarkUnread(w http.ResponseWriter, r *http.Request) {
+	var form bookmarkMarkForm
+
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+	id, err := strconv.Atoi(form.ID)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	userId := app.authenticatedUser(r)
+
+	err = app.bookmarks.MarkUnread(userId, id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	bookmark, err := app.bookmarks.Get(userId, id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	tags, err := app.tags.GetTagsForBookmark(id, userId)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	bookmark.Tags = tags
+
+	data := app.newTemplateData(r)
+	data.Bookmark = bookmark
+
+	app.renderPartial(w, http.StatusOK, "bookmark-item", data)
+}
+
 type tagCreateForm struct {
 	Name                string `form:"name"`
 	validator.Validator `form:"-"`

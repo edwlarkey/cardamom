@@ -34,6 +34,8 @@ func (app *application) routes() http.Handler {
 
 	router.Handler(http.MethodGet, "/", protected.ThenFunc(app.home))
 	router.Handler(http.MethodGet, "/bookmark/view/:id", protected.ThenFunc(app.bookmarkView))
+	router.Handler(http.MethodPost, "/bookmark/markunread", protected.ThenFunc(app.bookmarkMarkUnread))
+	router.Handler(http.MethodPost, "/bookmark/markread", protected.ThenFunc(app.bookmarkMarkRead))
 	router.Handler(http.MethodGet, "/bookmark/create", protected.ThenFunc(app.bookmarkCreate))
 	router.Handler(http.MethodPost, "/bookmark/create", protected.ThenFunc(app.bookmarkCreatePost))
 
