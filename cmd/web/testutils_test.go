@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"database/sql"
 	"html"
 	"io"
 	"log"
@@ -9,14 +10,21 @@ import (
 	"net/http/cookiejar"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"regexp"
 	"testing"
 	"time"
 
-	"git.sr.ht/~edwlarkey/cardamom/internal/models/mocks"
+	"git.sr.ht/~edwlarkey/cardamom/internal/models/sqlite"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
+
+	"github.com/golang-migrate/migrate/v4"
+	migratesqlite "github.com/golang-migrate/migrate/v4/database/sqlite"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
+	"github.com/jmoiron/sqlx"
+	_ "modernc.org/sqlite"
 )
 
 var csrfTokenRX = regexp.MustCompile(`<input type='hidden' name='csrf_token' value='(.+)'>`)
@@ -38,6 +46,8 @@ func newTestApplication(t *testing.T) *application {
 
 	formDecoder := form.NewDecoder()
 
+	dbx := newTestDB(t)
+
 	sessionManager := scs.New()
 	sessionManager.Lifetime = 12 * time.Hour
 	sessionManager.Cookie.Secure = true
@@ -45,9 +55,9 @@ func newTestApplication(t *testing.T) *application {
 	return &application{
 		errorLog:       log.New(io.Discard, "", 0),
 		infoLog:        log.New(io.Discard, "", 0),
-		bookmarks:      &mocks.BookmarkModel{},
-		users:          &mocks.UserModel{},
-		tags:           &mocks.TagModel{},
+		bookmarks:      &sqlite.BookmarkModel{DB: dbx},
+		users:          &sqlite.UserModel{DB: dbx},
+		tags:           &sqlite.TagModel{DB: dbx},
 		templateCache:  templateCache,
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
@@ -105,4 +115,50 @@ func (ts *testServer) postForm(t *testing.T, urlPath string, form url.Values) (i
 	bytes.TrimSpace(body)
 
 	return rs.StatusCode, rs.Header, string(body)
+}
+
+func newTestDB(t *testing.T) *sqlx.DB {
+	db, err := sql.Open("sqlite", "test.sqlite?_time_format=sqlite")
+	if err != nil {
+		t.Fatal(err)
+	}
+	dbx := sqlx.NewDb(db, "sqlite")
+
+	migrations, err := iofs.New(sqlite.MigrationFS, "migrations")
+	if err != nil {
+		t.Fatal(err)
+	}
+	driver, err := migratesqlite.WithInstance(db, &migratesqlite.Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	m, err := migrate.NewWithInstance("iofs", migrations, "test", driver)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = m.Up()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	script, err := os.ReadFile("../../internal/models/sqlite/testdata/setup.sql")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = db.Exec(string(script))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Cleanup(func() {
+		err = m.Down()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		db.Close()
+		os.Remove("test.sqlite")
+	})
+
+	return dbx
 }

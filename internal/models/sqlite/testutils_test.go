@@ -19,7 +19,7 @@ func newTestDB(t *testing.T) *sqlx.DB {
 	}
 	dbx := sqlx.NewDb(db, "sqlite")
 
-	migrations, err := iofs.New(migrationFS, "migrations")
+	migrations, err := iofs.New(MigrationFS, "migrations")
 	if err != nil {
 		t.Fatal(err)
 	}

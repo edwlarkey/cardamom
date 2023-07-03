@@ -8,7 +8,6 @@ import (
 	"os"
 	"time"
 
-	"git.sr.ht/~edwlarkey/cardamom/internal/models"
 	"git.sr.ht/~edwlarkey/cardamom/internal/models/sqlite"
 
 	"github.com/alexedwards/scs/sqlite3store"
@@ -20,9 +19,9 @@ import (
 type application struct {
 	errorLog       *log.Logger
 	infoLog        *log.Logger
-	bookmarks      models.BookmarkModelInterface
-	users          models.UserModelInterface
-	tags           models.TagModelInterface
+	bookmarks      *sqlite.BookmarkModel
+	users          *sqlite.UserModel
+	tags           *sqlite.TagModel
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager

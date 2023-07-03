@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"git.sr.ht/~edwlarkey/cardamom/internal/models"
-	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
+	sqlite "modernc.org/sqlite"
 )
 
 type UserModel struct {
@@ -28,9 +28,9 @@ func (m *UserModel) Insert(name, email, password string) error {
 	_, err = m.DB.Exec(stmt, name, email, string(hashedPassword), time.Now())
 	if err != nil {
 
-		var mySQLError *mysql.MySQLError
-		if errors.As(err, &mySQLError) {
-			if mySQLError.Number == 1062 && strings.Contains(mySQLError.Message, "users_uc_email") {
+		var SQLError *sqlite.Error
+		if errors.As(err, &SQLError) {
+			if SQLError.Code() == 2067 && strings.Contains(SQLError.Error(), "UNIQUE constraint failed: users.email") {
 				return models.ErrDuplicateEmail
 			}
 		}

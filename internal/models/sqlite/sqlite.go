@@ -13,7 +13,7 @@ import (
 )
 
 //go:embed migrations
-var migrationFS embed.FS
+var MigrationFS embed.FS
 
 func OpenDB(dsn string) (*sqlx.DB, error) {
 	db, err := sql.Open("sqlite", dsn)
@@ -31,7 +31,7 @@ func OpenDB(dsn string) (*sqlx.DB, error) {
 }
 
 func migrateDB(db *sql.DB) error {
-	migrations, err := iofs.New(migrationFS, "migrations")
+	migrations, err := iofs.New(MigrationFS, "migrations")
 	if err != nil {
 		return err
 	}
