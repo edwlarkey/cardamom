@@ -12,7 +12,7 @@
         <script type="module" src="https://the.missing.style/v1.0.9/missing-js/overflow-nav.js"></script>
     </head>
     <body>
-        <header class="navbar" data-overflow-nav="">
+        <header class="navbar" data-overflow-nav="" hx-boost="true">
           <nav class="contents">
             <div>
               <button aria-hidden="true" type="button" data-nav-expander="" class="iconbutton" aria-pressed="false" hidden="">☰</button>
@@ -26,11 +26,7 @@
                 <li><a href='/bookmark/create'>Create bookmark</a></li>
               {{end}}
               {{if .IsAuthenticated}}
-                <li><form action='/user/logout' method='POST'>
-                      <!-- Include the CSRF token -->
-                      <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
-                      <button>Logout</button>
-                  </form></li>
+                <li><a href="/user/logout" hx-target="body" hx-post="/user/logout" hx-vals='{"csrf_token": "{{$.CSRFToken}}"}'>Logout</a></li>
               {{else}}
                 <li><a href='/user/signup'>Signup</a></li>
                 <li><a href='/user/login'>Login</a></li>

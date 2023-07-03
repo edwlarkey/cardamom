@@ -174,7 +174,7 @@ func (app *application) bookmarkMarkRead(w http.ResponseWriter, r *http.Request)
 	data := app.newTemplateData(r)
 	data.Bookmark = bookmark
 
-	app.renderPartial(w, http.StatusOK, "bookmark-item", data)
+	http.Redirect(w, r, fmt.Sprintf("/bookmark/view/%d", id), http.StatusSeeOther)
 }
 
 func (app *application) bookmarkMarkUnread(w http.ResponseWriter, r *http.Request) {
@@ -219,7 +219,7 @@ func (app *application) bookmarkMarkUnread(w http.ResponseWriter, r *http.Reques
 	data := app.newTemplateData(r)
 	data.Bookmark = bookmark
 
-	app.renderPartial(w, http.StatusOK, "bookmark-item", data)
+	http.Redirect(w, r, fmt.Sprintf("/bookmark/view/%d", id), http.StatusSeeOther)
 }
 
 type tagCreateForm struct {

@@ -3,29 +3,28 @@
 {{define "main"}}
     <h2>Latest Bookmarks</h2>
     {{if .Bookmarks}}
-    <div class="bookmark-list">
-        {{range .Bookmarks}}
-			<div class="bookmark">
-				  <a class="bookmark-link" href="/bookmark/view/{{.ID}}">
-					<div class="title">{{.Title}} </div>
-				  
-				  </a>
+    <div class="bookmark-list" hx-boost="true">
+      {{range .Bookmarks}}
+      <div class="bookmark">
+        <a class="bookmark-link" href="/bookmark/view/{{.ID}}">
+          <div class="title">{{.Title}} </div>
+        </a>
 
-				  <time datetime="{{.Created}}">{{humanDate .Created}}</time>
+        <time datetime="{{.Created}}">{{humanDate .Created}}</time>
 
-				  <div class="summary">{{.Url}}</div>
+        <div class="summary">{{.Url}}</div>
 
-				  <div class="bookmark-footer">
-				  <span class="read-indicator">{{if .Read}}read{{else}}unread{{end}}</span>
-				  </div>
+        <div class="bookmark-footer">
+        <span class="read-indicator">{{if .Read}}read{{else}}unread{{end}}</span>
+        </div>
 
-				  <span class="bookmark-tags">
-					  {{range .Tags}}
-					  <span class="bookmark-tag">#{{.Name}}</span>&nbsp;
-					  {{end}}
-				  </span>
-			</div>
-        {{end}}
+        <span class="bookmark-tags">
+          {{range .Tags}}
+          <span class="bookmark-tag">#{{.Name}}</span>&nbsp;
+          {{end}}
+        </span>
+      </div>
+      {{end}}
     </div>
     {{else}}
         <p>There's nothing to see here... yet!</p>
