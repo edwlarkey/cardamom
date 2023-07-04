@@ -51,6 +51,13 @@ test:
 	@echo 'Running tests...'
 	go test -race -v ./...
 
+## cover: run tests and show coverage report
+.PHONY: cover
+cover:
+	@echo 'Running tests...'
+	go test -coverprofile=coverage.out -race -v ./...
+	go tool cover -html=coverage.out
+
 ## audit: tidy dependencies and format, vet and test all code
 .PHONY: audit
 audit:
