@@ -7,7 +7,6 @@ require (
 	github.com/alexedwards/scs/v2 v2.5.0
 	github.com/go-playground/form/v4 v4.2.0
 	github.com/go-shiori/go-readability v0.0.0-20220215145315-dd6828d2f09b
-	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-migrate/migrate/v4 v4.16.2
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/julienschmidt/httprouter v1.3.0
