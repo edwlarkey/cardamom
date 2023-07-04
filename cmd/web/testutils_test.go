@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"database/sql"
+	"fmt"
 	"html"
 	"io"
 	"log"
@@ -38,7 +39,7 @@ func extractCSRFToken(t *testing.T, body string) string {
 	return html.UnescapeString(string(matches[1]))
 }
 
-func newTestApplication(t *testing.T) *application {
+func newTestApplication(t *testing.T, testName string) *application {
 	templateCache, err := newTemplateCache()
 	if err != nil {
 		t.Fatal(err)
@@ -46,7 +47,7 @@ func newTestApplication(t *testing.T) *application {
 
 	formDecoder := form.NewDecoder()
 
-	dbx := newTestDB(t)
+	dbx := newTestDB(t, testName)
 
 	sessionManager := scs.New()
 	sessionManager.Lifetime = 12 * time.Hour
@@ -117,8 +118,8 @@ func (ts *testServer) postForm(t *testing.T, urlPath string, form url.Values) (i
 	return rs.StatusCode, rs.Header, string(body)
 }
 
-func newTestDB(t *testing.T) *sqlx.DB {
-	db, err := sql.Open("sqlite", "test.sqlite?_time_format=sqlite")
+func newTestDB(t *testing.T, testName string) *sqlx.DB {
+	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?mode=memory&_time_format=sqlite", testName))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -151,13 +152,7 @@ func newTestDB(t *testing.T) *sqlx.DB {
 	}
 
 	t.Cleanup(func() {
-		err = m.Down()
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		db.Close()
-		os.Remove("test.sqlite")
+		dbx.Close()
 	})
 
 	return dbx

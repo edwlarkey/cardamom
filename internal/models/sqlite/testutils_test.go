@@ -2,18 +2,19 @@ package sqlite
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"testing"
 
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/sqlite"
+	migratesqlite "github.com/golang-migrate/migrate/v4/database/sqlite"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"github.com/jmoiron/sqlx"
 	_ "modernc.org/sqlite"
 )
 
-func newTestDB(t *testing.T) *sqlx.DB {
-	db, err := sql.Open("sqlite", "test.sqlite?_time_format=sqlite")
+func newTestDB(t *testing.T, testName string) *sqlx.DB {
+	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?mode=memory&_time_format=sqlite", testName))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,7 +24,7 @@ func newTestDB(t *testing.T) *sqlx.DB {
 	if err != nil {
 		t.Fatal(err)
 	}
-	driver, err := sqlite.WithInstance(db, &sqlite.Config{})
+	driver, err := migratesqlite.WithInstance(db, &migratesqlite.Config{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,13 +47,7 @@ func newTestDB(t *testing.T) *sqlx.DB {
 	}
 
 	t.Cleanup(func() {
-		err = m.Down()
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		db.Close()
-		os.Remove("test.sqlite")
+		dbx.Close()
 	})
 
 	return dbx

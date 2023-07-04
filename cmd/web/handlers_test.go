@@ -10,7 +10,7 @@ import (
 )
 
 func TestPing(t *testing.T) {
-	app := newTestApplication(t)
+	app := newTestApplication(t, "TestPing")
 
 	ts := newTestServer(t, app.routes())
 	defer ts.Close()
@@ -22,7 +22,7 @@ func TestPing(t *testing.T) {
 }
 
 func TestBookmarkView(t *testing.T) {
-	app := newTestApplication(t)
+	app := newTestApplication(t, "TestBookmarkView")
 
 	ts := newTestServer(t, app.routes())
 	defer ts.Close()
@@ -81,6 +81,7 @@ func TestBookmarkView(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			code, _, body := ts.get(t, tt.urlPath)
 
@@ -94,7 +95,7 @@ func TestBookmarkView(t *testing.T) {
 }
 
 func TestAnonBookmarkView(t *testing.T) {
-	app := newTestApplication(t)
+	app := newTestApplication(t, "TestAnonBookmarkView")
 
 	ts := newTestServer(t, app.routes())
 	defer ts.Close()
@@ -139,6 +140,7 @@ func TestAnonBookmarkView(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			code, _, body := ts.get(t, tt.urlPath)
 
@@ -152,7 +154,7 @@ func TestAnonBookmarkView(t *testing.T) {
 }
 
 func TestUserSignup(t *testing.T) {
-	app := newTestApplication(t)
+	app := newTestApplication(t, "TestUserSignup")
 	ts := newTestServer(t, app.routes())
 	defer ts.Close()
 
@@ -248,6 +250,7 @@ func TestUserSignup(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			form := url.Values{}
 			form.Add("name", tt.userName)
