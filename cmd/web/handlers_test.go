@@ -51,11 +51,11 @@ func TestBookmarkView(t *testing.T) {
 			name:     "Valid ID",
 			urlPath:  "/bookmark/view/1",
 			wantCode: http.StatusOK,
-			wantBody: "An old silent pond...",
+			wantBody: "<p>some text here</p>",
 		},
 		{
 			name:     "Non-existent ID",
-			urlPath:  "/bookmark/view/2",
+			urlPath:  "/bookmark/view/5",
 			wantCode: http.StatusNotFound,
 		},
 		{
