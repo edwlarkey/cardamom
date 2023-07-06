@@ -94,7 +94,7 @@ func (m *TagModel) GetTagsForBookmark(bookmarkId int, userId int) ([]*models.Tag
 
 func (m *TagModel) All(user_id int) ([]*models.Tag, error) {
 	stmt := `SELECT id, name, created FROM tags
-    WHERE user_id = ? ORDER BY id DESC LIMIT 10`
+    WHERE user_id = ? ORDER BY name ASC`
 
 	rows, err := m.DB.Query(stmt, user_id)
 	if err != nil {
