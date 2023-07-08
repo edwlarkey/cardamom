@@ -32,12 +32,13 @@ func (app *application) routes() http.Handler {
 	// Routes protected via auth
 	protected := dynamic.Append(app.requireAuthentication)
 
-	router.Handler(http.MethodGet, "/", protected.ThenFunc(app.home))
+	router.Handler(http.MethodGet, "/", protected.ThenFunc(app.bookmarkList))
 	router.Handler(http.MethodGet, "/bookmark/view/:id", protected.ThenFunc(app.bookmarkView))
-	router.Handler(http.MethodPost, "/bookmark/markunread", protected.ThenFunc(app.bookmarkMarkUnread))
-	router.Handler(http.MethodPost, "/bookmark/markread", protected.ThenFunc(app.bookmarkMarkRead))
+	router.Handler(http.MethodPost, "/bookmark/unread/:id", protected.ThenFunc(app.bookmarkMarkUnread))
+	router.Handler(http.MethodPost, "/bookmark/read/:id", protected.ThenFunc(app.bookmarkMarkRead))
 	router.Handler(http.MethodGet, "/bookmark/create", protected.ThenFunc(app.bookmarkCreate))
 	router.Handler(http.MethodPost, "/bookmark/create", protected.ThenFunc(app.bookmarkCreatePost))
+	router.Handler(http.MethodPost, "/bookmark/delete/:id", protected.ThenFunc(app.bookmarkDelete))
 
 	router.Handler(http.MethodPost, "/user/logout", protected.ThenFunc(app.userLogoutPost))
 

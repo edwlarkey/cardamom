@@ -3,32 +3,36 @@
 {{define "main"}}
   {{with .Bookmark}}
   <div id="bookmark-view" class="bookmark-list">
-    <div class="bookmark">
-      <a class="bookmark-link" href="/bookmark/view/{{.ID}}">
-          <div class="title">{{.Title}} </div>
-
-      </a>
-
-      <time datetime="{{.Created}}">{{humanDate .Created}}</time>
-
-      <div class="summary">{{.Url}}</div>
-
-      <div class="bookmark-footer">
-      <span class="read-indicator">{{if .Read}}read{{else}}unread{{end}}</span>
+    <div class="grid grid-even-rows box bookmark-meta">
+	  <div data-cols="1 8" data-rows="1">
+		  <a class="bookmark-link" href="/bookmark/view/{{.ID}}">
+			  <span class="title">{{.Title}} </span>
+		  </a>
       </div>
 
-      <span class="bookmark-tags">
-          {{range .Tags}}
-          <span class="bookmark-tag">#{{.Name}}</span>&nbsp;
-          {{end}}
-      </span>
+	  <div data-cols="9 12" data-rows="1" style="text-align:right;">
+		  <time datetime="{{.Created}}">{{humanDate .Created}}</time>
+      </div>
+
+		<div data-cols="1 12" data-rows="2" class="summary"><a href="{{.Url}}">{{.Url}}</a></div>
+
+	  <div data-cols="1 7" data-rows="3">
+		  {{range .Tags}}
+		  <span class="bookmark-tag">#{{.Name}}</span>&nbsp;
+		  {{end}}
+	  </div>
+
+	  <div data-cols="8 12" data-rows="3" style="text-align:right;">
+		  <span class="read-indicator">{{if .Read}}read{{else}}unread{{end}}</span>
+	  </div>
     </div>
   </div>
     {{if .Read}}
-    <a href="" hx-target="body" hx-post="/bookmark/markunread" hx-vals='{"id": "{{.ID}}", "csrf_token": "{{$.CSRFToken}}"}'>mark unread</a>
+	<a href="" hx-target="body" hx-post="/bookmark/unread/{{.ID}}" hx-vals='{"csrf_token": "{{$.CSRFToken}}"}'>mark unread</a> |
     {{else}}
-    <a href="" hx-target="body" hx-post="/bookmark/markread" hx-vals='{"id": "{{.ID}}", "csrf_token": "{{$.CSRFToken}}"}'>mark read</a>
+	<a href="" hx-target="body" hx-post="/bookmark/read/{{.ID}}" hx-vals='{"csrf_token": "{{$.CSRFToken}}"}'>mark read</a> | 
     {{end}}
+    <a href="" hx-target="body" hx-push-url="/" hx-post="/bookmark/delete/{{.ID}}" hx-vals='{"csrf_token": "{{$.CSRFToken}}"}' hx-confirm="Are you sure you want to delete this bookmark?">delete</a>
   <div class="article-content">
     {{.Content}}
   </div>

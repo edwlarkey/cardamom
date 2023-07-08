@@ -5,24 +5,28 @@
     {{if .Bookmarks}}
     <div class="bookmark-list" hx-boost="true">
       {{range .Bookmarks}}
-      <div class="bookmark">
-        <a class="bookmark-link" href="/bookmark/view/{{.ID}}">
-          <div class="title">{{.Title}} </div>
-        </a>
+      <div class="grid grid-even-rows box bookmark bookmark-meta">
+        <div data-cols="1 8" data-rows="1">
+          <a class="bookmark-link" href="/bookmark/view/{{.ID}}">
+            <span class="title">{{.Title}} </span>
+          </a>
+          </div>
 
-        <time datetime="{{.Created}}">{{humanDate .Created}}</time>
+        <div data-cols="9 12" data-rows="1" style="text-align:right;">
+          <time datetime="{{.Created}}">{{humanDate .Created}}</time>
+          </div>
 
-        <div class="summary">{{.Url}}</div>
+          <div data-cols="1 12" data-rows="2" class="summary">{{.Url}}</div>
 
-        <div class="bookmark-footer">
-        <span class="read-indicator">{{if .Read}}read{{else}}unread{{end}}</span>
-        </div>
-
-        <span class="bookmark-tags">
+        <div data-cols="1 7" data-rows="3">
           {{range .Tags}}
           <span class="bookmark-tag">#{{.Name}}</span>&nbsp;
           {{end}}
-        </span>
+        </div>
+
+        <div data-cols="8 12" data-rows="3" style="text-align:right;">
+          <span class="read-indicator">{{if .Read}}read{{else}}unread{{end}}</span>
+        </div>
       </div>
       {{end}}
     </div>

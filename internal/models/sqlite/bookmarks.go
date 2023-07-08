@@ -77,6 +77,23 @@ func (m *BookmarkModel) Get(userId int, id int) (*models.Bookmark, error) {
 	return s, nil
 }
 
+func (m *BookmarkModel) Delete(userId int, id int) error {
+	tx, err := m.DB.BeginTx(context.TODO(), &sql.TxOptions{})
+	if err != nil {
+		return err
+	}
+	stmt := `DELETE FROM bookmarks WHERE id = ? and user_id = ?;`
+
+	_, err = tx.Exec(stmt, id, userId)
+	if err != nil {
+		return err
+	}
+
+	tx.Commit()
+
+	return nil
+}
+
 func (m *BookmarkModel) Latest(userId int) ([]*models.Bookmark, error) {
 	stmt := `SELECT id, title, url, content, created, read FROM bookmarks
     WHERE user_id = ? ORDER BY id DESC LIMIT 10`
