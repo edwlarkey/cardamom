@@ -30,6 +30,7 @@ type application struct {
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	dsn := flag.String("dsn", "cardamom.sqlite?_time_format=sqlite", "data source name")
+	sessionLength := flag.Int("session-length", 360, "Length of session time in hours")
 
 	flag.Parse()
 
@@ -51,7 +52,7 @@ func main() {
 
 	sessionManager := scs.New()
 	sessionManager.Store = sqlite3store.New(dbx.DB)
-	sessionManager.Lifetime = 12 * time.Hour
+	sessionManager.Lifetime = time.Duration(*sessionLength) * time.Hour
 
 	sessionManager.Cookie.Secure = true
 
