@@ -1,3 +1,7 @@
+:root {
+  --line-length: 80ch;
+}
+
 .bookmark-list .bookmark:nth-child(2n + 1) {
   background: #eee;
 }

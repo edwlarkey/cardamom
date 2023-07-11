@@ -15,6 +15,7 @@ type templateData struct {
 	Bookmark        *models.Bookmark
 	BookmarkContent template.HTML
 	Bookmarks       []*models.Bookmark
+	Tag             *models.Tag
 	Tags            []*models.Tag
 	Form            any
 	Flash           string

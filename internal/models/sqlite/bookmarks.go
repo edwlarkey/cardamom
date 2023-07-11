@@ -124,6 +124,45 @@ func (m *BookmarkModel) Latest(userId int) ([]*models.Bookmark, error) {
 	return bookmarks, nil
 }
 
+func (m *BookmarkModel) GetBookmarksForTag(userId int, tagId int) ([]*models.Bookmark, error) {
+	stmt := `SELECT bookmark_id FROM bookmark_tags
+    WHERE tag_id = ? AND user_id = ?`
+
+	rows, err := m.DB.Query(stmt, tagId, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	bookmarks := []*models.Bookmark{}
+	var bookmarkIds []int
+
+	for rows.Next() {
+		var t int
+
+		err := rows.Scan(&t)
+		if err != nil {
+			return nil, err
+		}
+
+		bookmarkIds = append(bookmarkIds, t)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	for _, id := range bookmarkIds {
+		bookmark, err := m.Get(userId, id)
+		if err != nil {
+			return nil, err
+		}
+		bookmarks = append(bookmarks, bookmark)
+	}
+
+	return bookmarks, nil
+}
+
 func (m *BookmarkModel) MarkRead(userId int, id int) error {
 	tx, err := m.DB.BeginTx(context.TODO(), &sql.TxOptions{})
 	if err != nil {

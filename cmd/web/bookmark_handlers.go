@@ -20,7 +20,7 @@ func (app *application) bookmarkList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, bookmark := range bookmarks {
-		tags, err := app.tags.GetTagsForBookmark(bookmark.ID, userId)
+		tags, err := app.tags.GetTagsForBookmark(userId, bookmark.ID)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -28,8 +28,15 @@ func (app *application) bookmarkList(w http.ResponseWriter, r *http.Request) {
 		bookmark.Tags = tags
 	}
 
+	tags, err := app.tags.All(userId)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 	data := app.newTemplateData(r)
 	data.Bookmarks = bookmarks
+	data.Tags = tags
 
 	app.render(w, http.StatusOK, "home.tmpl", data)
 }
@@ -55,7 +62,7 @@ func (app *application) bookmarkView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tags, err := app.tags.GetTagsForBookmark(id, userId)
+	tags, err := app.tags.GetTagsForBookmark(userId, id)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -176,7 +183,7 @@ func (app *application) bookmarkMarkRead(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	tags, err := app.tags.GetTagsForBookmark(id, userId)
+	tags, err := app.tags.GetTagsForBookmark(userId, id)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -216,7 +223,7 @@ func (app *application) bookmarkMarkUnread(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	tags, err := app.tags.GetTagsForBookmark(id, userId)
+	tags, err := app.tags.GetTagsForBookmark(userId, id)
 	if err != nil {
 		app.serverError(w, err)
 		return

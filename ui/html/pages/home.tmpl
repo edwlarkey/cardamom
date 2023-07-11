@@ -1,6 +1,9 @@
 {{define "title"}}Home{{end}}
 
 {{define "main"}}
+    {{range .Tags}}
+    <span class="bookmark-tag" hx-boost="true"><a href="/tag/view/{{.ID}}">#{{.Name}}</a></span>&nbsp;
+    {{end}}
     <h2>Latest Bookmarks</h2>
     {{if .Bookmarks}}
     <div class="bookmark-list" hx-boost="true">

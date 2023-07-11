@@ -1,9 +1,13 @@
 package main
 
 import (
+	"errors"
 	"net/http"
+	"strconv"
 
+	"git.sr.ht/~edwlarkey/cardamom/internal/models"
 	"git.sr.ht/~edwlarkey/cardamom/internal/validator"
+	"github.com/julienschmidt/httprouter"
 )
 
 type tagCreateForm struct {
@@ -27,6 +31,53 @@ func (app *application) tagList(w http.ResponseWriter, r *http.Request) {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
+}
+
+func (app *application) tagView(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil || id < 1 {
+		app.notFound(w)
+		return
+	}
+
+	userId := app.authenticatedUser(r)
+
+	tag, err := app.tags.Get(userId, id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	bookmarks, err := app.bookmarks.GetBookmarksForTag(userId, id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	for _, bookmark := range bookmarks {
+		tags, err := app.tags.GetTagsForBookmark(userId, bookmark.ID)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		bookmark.Tags = tags
+	}
+
+	data := app.newTemplateData(r)
+	data.Tag = tag
+	data.Bookmarks = bookmarks
+
+	app.render(w, http.StatusOK, "view_tag.tmpl", data)
 }
 
 func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {

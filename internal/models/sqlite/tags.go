@@ -33,7 +33,7 @@ func (m *TagModel) Insert(name string, userId int) (int, error) {
 	return int(id), nil
 }
 
-func (m *TagModel) Get(id int, userId int) (*models.Tag, error) {
+func (m *TagModel) Get(userId int, id int) (*models.Tag, error) {
 	stmt := `SELECT id, name, created FROM tags
     WHERE user_id = ? AND id = ?`
 
@@ -53,7 +53,7 @@ func (m *TagModel) Get(id int, userId int) (*models.Tag, error) {
 	return s, nil
 }
 
-func (m *TagModel) GetTagsForBookmark(bookmarkId int, userId int) ([]*models.Tag, error) {
+func (m *TagModel) GetTagsForBookmark(userId int, bookmarkId int) ([]*models.Tag, error) {
 	stmt := `SELECT tag_id FROM bookmark_tags
     WHERE bookmark_id = ? AND user_id = ?`
 
@@ -82,7 +82,7 @@ func (m *TagModel) GetTagsForBookmark(bookmarkId int, userId int) ([]*models.Tag
 	}
 
 	for _, id := range tagIds {
-		tag, err := m.Get(id, userId)
+		tag, err := m.Get(userId, id)
 		if err != nil {
 			return nil, err
 		}
