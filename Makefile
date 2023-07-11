@@ -90,3 +90,16 @@ vendor:
 build:
 	@echo 'Building cmd/web...'
 	go build -ldflags="-s" -o=./bin/$(app_name) ./cmd/web
+
+## build/docker: build the cmd/web application docker image
+.PHONY: build/docker
+build/docker:
+	@echo 'Building docker image...'
+	docker build . -t cardamom:latest
+	docker build . -t ghcr.io/edwlarkey/cardamom:latest
+
+## release: build and push docker image
+.PHONY: release
+release: build/docker
+	@echo 'Pushing docker image...'
+	docker push ghcr.io/edwlarkey/cardamom:latest
