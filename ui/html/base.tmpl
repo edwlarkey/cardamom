@@ -1,51 +1,51 @@
 {{define "base"}}
 <!doctype html>
 <html lang='en'>
-    <head>
-        <meta charset='utf-8'>
-        <meta name="viewport" content="width=device-width">
-        <title>{{template "title" .}} - Snippetbox</title>
-        <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css">
-        <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing-prism.min.css">
-        <link rel='stylesheet' href='/static/css/main.css'>
-        <link rel='shortcut icon' href='/static/img/favicon.ico' type='image/x-icon'>
-        <script src="https://unpkg.com/htmx.org@1.9.2" integrity="sha384-L6OqL9pRWyyFU3+/bjdSri+iIphTN/bvYyM37tICVyOJkWZLpP2vGn6VUEXgzg6h" crossorigin="anonymous"></script>
-        <script type="module" src="https://the.missing.style/v1.0.9/missing-js/overflow-nav.js"></script>
-    </head>
-    <body>
-        <header class="navbar" data-overflow-nav="" hx-boost="true">
-          <nav class="contents">
-            <div>
-              <button aria-hidden="true" type="button" data-nav-expander="" class="iconbutton" aria-pressed="false" hidden="">☰</button>
-            </div>
-            <p class="float:left">
-              <a href="/" class="allcaps">Cardamom</a> 
-            </p>
-            <ul role="list">
-              <li><a href='/'>Home</a></li>
-              {{if .IsAuthenticated}}
-                <li><a href='/bookmark/create'>Create bookmark</a></li>
-              {{end}}
-              {{if .IsAuthenticated}}
-                <li><a href="/user/logout" hx-target="body" hx-post="/user/logout" hx-vals='{"csrf_token": "{{$.CSRFToken}}"}'>Logout</a></li>
-              {{else}}
-                <li><a href='/user/signup'>Signup</a></li>
-                <li><a href='/user/login'>Login</a></li>
-              {{end}}
-            </ul>
-          </nav>
-        </header>
-        <main>
-            <!-- Display the flash message if one exists -->
-            {{with .Flash}}
-                <div class='box'>{{.}}</div>
-            {{end}}
-            {{template "main" .}}
-        </main>
-        <footer>
-            Powered by <a href='https://golang.org/'>Go</a> and <a href='https://htmx.org/'>htmx</a> | <a href="https://git.sr.ht/~edwlarkey/cardamom">Source</a>
-        </footer>
-        <script src="/static/js/main.js" type="text/javascript"></script>
-    </body>
+  <head>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width">
+    <title>{{template "title" .}} - Cardamom</title>
+    <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing-prism.min.css">
+    <link rel='stylesheet' href='/static/css/main.css'>
+    <link rel='shortcut icon' href='/static/img/favicon.ico' type='image/x-icon'>
+    <script src="https://unpkg.com/htmx.org@1.9.2" integrity="sha384-L6OqL9pRWyyFU3+/bjdSri+iIphTN/bvYyM37tICVyOJkWZLpP2vGn6VUEXgzg6h" crossorigin="anonymous"></script>
+    <script type="module" src="https://the.missing.style/v1.0.9/missing-js/overflow-nav.js"></script>
+  </head>
+  <body>
+    <header class="navbar" data-overflow-nav="" hx-boost="true">
+      <nav class="contents">
+        <div>
+          <button aria-hidden="true" type="button" data-nav-expander="" class="iconbutton" aria-pressed="false" hidden="">☰</button>
+        </div>
+        <p class="float:left">
+          <a href="/" class="allcaps">Cardamom</a> 
+        </p>
+        <ul role="list">
+          <li><a href='/'>Home</a></li>
+          {{if .IsAuthenticated}}
+            <li><a href='/bookmark/create'>Create bookmark</a></li>
+          {{end}}
+          {{if .IsAuthenticated}}
+            <li><a href="/user/logout" hx-target="body" hx-post="/user/logout" hx-vals='{"csrf_token": "{{$.CSRFToken}}"}'>Logout</a></li>
+          {{else}}
+            <li><a href='/user/signup'>Signup</a></li>
+            <li><a href='/user/login'>Login</a></li>
+          {{end}}
+        </ul>
+      </nav>
+    </header>
+    <main>
+        <!-- Display the flash message if one exists -->
+        {{with .Flash}}
+            <div class='box'>{{.}}</div>
+        {{end}}
+        {{template "main" .}}
+    </main>
+    <footer>
+        Powered by <a href='https://golang.org/'>Go</a> and <a href='https://htmx.org/'>htmx</a> | <a href="https://git.sr.ht/~edwlarkey/cardamom">Source</a>
+    </footer>
+    <script src="/static/js/main.js" type="text/javascript"></script>
+  </body>
 </html>
 {{end}}
