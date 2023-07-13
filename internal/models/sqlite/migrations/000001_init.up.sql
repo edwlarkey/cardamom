@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS bookmarks (
   user_id INTEGER NOT NULL,
   created DATETIME NOT NULL,
   PRIMARY KEY(id AUTOINCREMENT)
-  FOREIGN KEY(user_id) REFERENCES users(id)
+  FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX "uni_user_title" ON "bookmarks" (
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS tags (
   user_id INTEGER NOT NULL,
   created DATETIME NOT NULL,
   PRIMARY KEY(id AUTOINCREMENT)
-  FOREIGN KEY(user_id) REFERENCES users(id)
+  FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX "uni_user_tag" ON "tags" (
@@ -53,9 +53,9 @@ CREATE TABLE IF NOT EXISTS bookmark_tags (
   tag_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
   PRIMARY KEY(id AUTOINCREMENT)
-  FOREIGN KEY(bookmark_id) REFERENCES bookmarks(id)
-  FOREIGN KEY(tag_id) REFERENCES tags(id)
-  FOREIGN KEY(user_id) REFERENCES users(id)
+  FOREIGN KEY(bookmark_id) REFERENCES bookmarks(id) ON DELETE CASCADE
+  FOREIGN KEY(tag_id) REFERENCES tags(id) ON DELETE CASCADE
+  FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX "uni_bookmark_tag" ON "bookmark_tags" (

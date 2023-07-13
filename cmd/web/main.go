@@ -29,7 +29,7 @@ type application struct {
 
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
-	dsn := flag.String("dsn", "cardamom.sqlite?_time_format=sqlite", "data source name")
+	dsn := flag.String("dsn", "cardamom.sqlite?_time_format=sqlite&_pragma=foreign_keys(1)", "data source name")
 	sessionLength := flag.Int("session-length", 360, "Length of session time in hours")
 
 	flag.Parse()
