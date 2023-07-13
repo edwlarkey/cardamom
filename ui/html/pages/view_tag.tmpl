@@ -1,7 +1,8 @@
-{{define "title"}}TAGNAME{{end}}
+{{define "title"}}{{.Tag.Name}} - Cardamom{{end}}
 
 {{define "main"}}
-    <h2>Bookmarks for TAGNAME</h2>
+    <h2>Bookmarks for {{.Tag.Name}}</h2>
+    <a href="" hx-target="body" hx-push-url="/" hx-post="/tag/delete/{{.Tag.ID}}" hx-vals='{"csrf_token": "{{$.CSRFToken}}"}' hx-confirm="Are you sure you want to delete this tag? Bookmarks will be untagged, not deleted.">delete {{.Tag.Name}}</a>
     {{if .Bookmarks}}
     <div class="bookmark-list" hx-boost="true">
       {{range .Bookmarks}}

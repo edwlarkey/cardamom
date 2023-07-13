@@ -1,6 +1,7 @@
 package sqlite
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"time"
@@ -14,6 +15,10 @@ type TagModel struct {
 }
 
 func (m *TagModel) Insert(name string, userId int) (int, error) {
+	tx, err := m.DB.BeginTx(context.TODO(), &sql.TxOptions{})
+	if err != nil {
+		return 0, err
+	}
 	stmt := `INSERT INTO tags (name, user_id, created) VALUES (
 		?,
 		?,
@@ -30,7 +35,26 @@ func (m *TagModel) Insert(name string, userId int) (int, error) {
 		return 0, err
 	}
 
+	tx.Commit()
+
 	return int(id), nil
+}
+
+func (m *TagModel) Delete(userId int, id int) error {
+	tx, err := m.DB.BeginTx(context.TODO(), &sql.TxOptions{})
+	if err != nil {
+		return err
+	}
+	stmt := `DELETE FROM tags WHERE id = ? and user_id = ?;`
+
+	_, err = tx.Exec(stmt, id, userId)
+	if err != nil {
+		return err
+	}
+
+	tx.Commit()
+
+	return nil
 }
 
 func (m *TagModel) Get(userId int, id int) (*models.Tag, error) {

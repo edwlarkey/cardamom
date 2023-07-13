@@ -106,3 +106,25 @@ func (app *application) tagCreatePost(w http.ResponseWriter, r *http.Request) {
 
 	app.renderPartial(w, http.StatusOK, "tag-options", data)
 }
+
+func (app *application) tagDelete(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil || id < 1 {
+		app.notFound(w)
+		return
+	}
+
+	userId := app.authenticatedUser(r)
+
+	err = app.tags.Delete(userId, id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Tag successfully deleted!")
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
